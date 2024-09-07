@@ -1,7 +1,9 @@
 package domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 @Getter
 public class Item {
     private Long itemId;
@@ -13,13 +15,7 @@ public class Item {
     private String size;
     private String color;
 
-    public Item(String name, int price, String manufactureDate, String origin, String company, String size, String color) {
-        this.name = name;
-        this.price = price;
-        this.manufactureDate = manufactureDate;
-        this.origin = origin;
-        this.company = company;
-        this.size = size;
-        this.color = color;
+    public static Item of(String name, int price, String manufactureDate, String origin, String company, String size, String color) {
+        return new Item(null,name,price,manufactureDate,origin,company,size,color);
     }
 }
