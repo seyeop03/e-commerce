@@ -50,7 +50,7 @@ public class ItemRepository {
 
             List<Item> itemList = new ArrayList<>();
             while (rs.next()){
-                Item item = new Item(
+                Item item = Item.of(
                         rs.getString("name"),
                         rs.getInt("price"),
                         rs.getString("manufacture_date"),
@@ -82,7 +82,7 @@ public class ItemRepository {
             rs = pstmt.executeQuery();
             Item item = null;
             if (rs.next()) {
-                item = new Item(
+                item = Item.of(
                         rs.getString("name"),
                         rs.getInt("price"),
                         rs.getString("manufacture_date"),
@@ -142,5 +142,39 @@ public class ItemRepository {
         } finally {
             close(conn, pstmt, null);
         }
+    }
+
+    public List<Item> findByKeyword(String keyword) {
+        String sql = " SELECT * FROM item WHERE item.name like '%(?)%' ";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1,keyword);
+            rs = pstmt.executeQuery();
+
+            List<Item> items = null;
+            while (rs.next()) {
+                Item item = Item.of(
+                        rs.getString("name"),
+                        rs.getInt("price"),
+                        rs.getString("manufacture_date"),
+                        rs.getString("origin"),
+                        rs.getString("company"),
+                        rs.getString("size"),
+                        rs.getString("color")
+                );
+                items.add(item);
+            }
+            return items;
+        } catch (SQLException e){
+            throw new CustomDbException(e);
+        } finally {
+            close(conn,pstmt,rs);
+        }
+
     }
 }
