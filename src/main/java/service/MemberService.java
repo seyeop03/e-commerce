@@ -58,7 +58,7 @@ public class MemberService {
                     if (!session.isAuthenticated()) {
                         System.out.println("로그인 상태가 아닙니다. 로그인 후 진행해주세요.");
                     } else {
-                        viewMemberInfo(); //회원 정보 조회
+                        viewMemberInfo(session.getCurrentMember()); //회원 정보 조회
                     }
                     break;
                 case 5:
@@ -78,10 +78,7 @@ public class MemberService {
                 case 7:
                     Member currentMember = session.getCurrentMember();
                     if (currentMember != null && currentMember.getRole().equals(Role.ADMIN)) {
-                        //회원 전체 조회
-                        memberRepository.findAll()
-                                .stream()
-                                .forEach(m -> System.out.println(m));
+                        showAllMembers(); //회원 전체 조회
                     } else {
                         System.out.println("잘못된 입력입니다. 0~7 사이의 숫자를 입력하세요.");
                     }
@@ -135,6 +132,7 @@ public class MemberService {
         //ID 중복 확인
         if (!isUsernameDuplicated(username)) {
             memberRepository.save(member);
+            System.out.println("가입 되었습니다!");
         }
     }
 
@@ -178,20 +176,21 @@ public class MemberService {
     }
 
     //== 전체 회원 조회 ==//
-    public List<Member> showAllMembers() {
-        return memberRepository.findAll();
+    public void showAllMembers() {
+        memberRepository.findAll()
+                .stream()
+                .forEach(m -> viewMemberInfo(m));
     }
 
     //== 회원 조회 ==//
-    public void viewMemberInfo() {
-        Member currentMember = Session.getInstance().getCurrentMember();
-        System.out.println("아이디:" + currentMember.getUsername());
-        System.out.println("이름:" + currentMember.getName());
-        System.out.println("주소:" + currentMember.getAddress());
-        System.out.println("집:" + currentMember.getHome());
-        System.out.println("이메일:" + currentMember.getEmail());
-        System.out.println("생년월일:" + currentMember.getBirth());
-        System.out.println("유저 역할:" + currentMember.getRole());
+    public void viewMemberInfo(Member member) {
+        System.out.println("아이디:" + member.getUsername());
+        System.out.println("이름:" + member.getName());
+        System.out.println("주소:" + member.getAddress());
+        System.out.println("집:" + member.getHome());
+        System.out.println("이메일:" + member.getEmail());
+        System.out.println("생년월일:" + member.getBirth());
+        System.out.println("유저 역할:" + member.getRole());
     }
 
     //== 회원 수정 ==//
@@ -223,12 +222,14 @@ public class MemberService {
         Member currentMember = Session.getInstance().getCurrentMember();
         Long memberId = currentMember.getMemberId();
         System.out.println("회원탈퇴를 하시려면 \"" + currentMember.getUsername() + "\"를 입력해주세요.");
+        System.out.print("탈퇴 문구 입력: ");
         String input = sc.next();
 
         //입력 문자열이 일치하면 로그아웃 이후 탈퇴 진행
         if (input.equals(currentMember.getUsername())) {
             Session.getInstance().setCurrentMember(null); //로그아웃
             memberRepository.deleteById(memberId);
+            System.out.println("탈퇴되었습니다!");
         } else {
             System.out.println("입력 문자열이 일치하지 않습니다.\n");
         }

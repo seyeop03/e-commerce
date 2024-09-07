@@ -122,7 +122,8 @@ public class MemberRepository {
 
             Member member = null;
             if (rs.next()) {
-                member = Member.of(
+                member = new Member(
+                        rs.getLong("member_id"),
                         rs.getString("username"),
                         rs.getString("password"),
                         rs.getString("name"),
