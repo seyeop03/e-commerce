@@ -11,11 +11,11 @@ import java.util.Scanner;
 public class AppController {
 
     AppConfig appConfig = new AppConfig();
-    MemberService memberService = appConfig.MemberService();
-    OrderService orderService = appConfig.OrderService();
-    ItemService itemService = appConfig.ItemService();
+    MemberService memberService = appConfig.memberService();
+    OrderService orderService = appConfig.orderService();
+    ItemService itemService = appConfig.itemService();
 
-    public void run() throws SQLException {
+    public void run() {
         Scanner sc = new Scanner(System.in);
 
         while (true) {

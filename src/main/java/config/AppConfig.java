@@ -9,13 +9,11 @@ import service.OrderService;
 //But, 중복이 존재하고, 역할에 따른 구현이 잘 보이지 않는다.
 public class AppConfig {
 
-//    public PasswordEncoder passwordEncoder()
-
-    public MemberService MemberService() {
+    public MemberService memberService() {
         return new MemberService(new MemberRepository());
     }
 
-    public OrderService OrderService() {
+    public OrderService orderService() {
         return new OrderService(
                 new OrderRepository(),
                 new MemberRepository(),
@@ -25,7 +23,7 @@ public class AppConfig {
                 new OrderItemRepository());
     }
 
-    public ItemService ItemService() {
+    public ItemService itemService() {
         return new ItemService(
                 new ItemRepository(),
                 new CategoryRepository(),

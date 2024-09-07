@@ -6,7 +6,7 @@ import repository.*;
 
 import java.util.Scanner;
 
-//(상품 등록, 상품 삭제, 상품 수정, 전체 상품 조회) + 카테고리별 조회 + 리뷰 + 장바구니
+//기본 상품 기능(상품 등록, 상품 삭제, 상품 수정) + 카테고리별 조회(상품 조회, 장바구니, 특정 상품 리뷰)
 public class ItemService {
 
     private final ItemRepository itemRepository;
@@ -23,42 +23,51 @@ public class ItemService {
 
     //== 상품 서비스 핸들러 ==//
     public void handleItemService(Scanner sc){
-
+        displayItemMenu();
         int choice = sc.nextInt();
-        viewItemService();
+        sc.nextLine();  // Consume newline
 
         switch (choice){
-            case 1:
-                viewReviewService();
-                switch (choice){
-                    case 1: //리뷰보기
-                        selectReview();
-                        break;
-                    case 2: //리뷰작성
-                        insertReview(sc);
-                        break;
-                    case 3: //리뷰수정
-                        System.out.println("수정할 리뷰 아이디를 입력해주세요.");
-                        Long reviewId = sc.nextLong();
-                        // 권한 확인
-                        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
+            case 1: //상품 관련 서비스 호출 (카테고리별 상품 조회, 장바구니, 특정 상품 리뷰)
+                handleItemService(sc);
+                break;
+            case 2: //상품 관리자 서비스 핸들러 호출 (상품 등록, 삭제, 수정 기능)
+                break;
+            default:
+                serviceBreak();
+        }
+    }
 
-                        //샀는지 안샀는지
-//                        if()
-                        System.out.println("수정할 별점을 입력해 주세요.");
-                        int stars = sc.nextInt();
-                        System.out.println("수정할 리뷰 내용을 입력해주세요.");
-                        String contents = sc.next();
+    //== 리뷰 서비스 핸들러 ==//
+    public void handleReviewService(Scanner sc){
+        int choice = sc.nextInt();
+        displayReviewMenu();
 
-                        Review review = Review.of(reviewId, stars, contents);
-                        reviewRepository.updateById(reviewId, review);
-                        break;
-                    case 4: //리뷰삭제
-                        deleteReview(sc);
-                        break;
-                    default:
-                        serviceBreak();
-                }
+        switch (choice){
+            case 1: //리뷰보기
+                selectReview();
+                break;
+            case 2: //리뷰작성
+                insertReview(sc);
+                break;
+            case 3: //리뷰수정
+                System.out.println("수정할 리뷰 아이디를 입력해주세요.");
+                Long reviewId = sc.nextLong();
+                // 권한 확인
+                Long memberId = Session.getInstance().getCurrentMember().getMemberId();
+
+                //샀는지 안샀는지
+                System.out.println("수정할 별점을 입력해 주세요.");
+                int stars = sc.nextInt();
+                System.out.println("수정할 리뷰 내용을 입력해주세요.");
+                String contents = sc.next();
+
+                Review review = Review.of(reviewId, stars, contents);
+                reviewRepository.updateById(reviewId, review);
+                break;
+            case 4: //리뷰삭제
+                deleteReview(sc);
+                break;
             default:
                 serviceBreak();
         }
@@ -97,7 +106,7 @@ public class ItemService {
         reviewRepository.save(review);
     }
 
-    private static void viewItemService() {
+    private static void displayItemMenu() {
         System.out.println("""
                 1. 리뷰서비스
                 2. ~~~~
@@ -105,7 +114,7 @@ public class ItemService {
                 """);
     }
 
-    private static void viewReviewService() {
+    private static void displayReviewMenu() {
         System.out.println("""
                 1. 리뷰보기
                 2. 리뷰작성
