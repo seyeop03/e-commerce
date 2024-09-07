@@ -85,6 +85,7 @@ public class MemberService {
                     } else {
                         System.out.println("잘못된 입력입니다. 0~7 사이의 숫자를 입력하세요.");
                     }
+                    break;
                 case 0:
                     System.out.println("회원 서비스를 종료합니다.");
                     return;
