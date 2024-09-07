@@ -34,14 +34,17 @@ public class AppController {
         System.out.print("메뉴를 선택하세요: ");
     }
 
-    private void dispatch(int choice, Scanner sc) throws SQLException {
+    private void dispatch(int choice, Scanner sc) {
         switch (choice){
             case 1:
                 memberService.handleMemberService(sc); //회원 서비스
+                break;
             case 2 :
                 itemService.handleItemService(sc); //상품 서비스 => 카테고리/장바구니/리뷰
+                break;
             case 3 :
                 orderService.handleOrderService(sc); //주문 서비스
+                break;
             case 0:
                 System.out.println("프로그램을 종료합니다.");
                 System.exit(0);
