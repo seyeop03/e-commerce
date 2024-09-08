@@ -31,18 +31,28 @@ public class ItemService {
         sc.nextLine();  // Consume newline
 
         switch (choice){
-            case 1: //상품 관련 서비스 호출 (카테고리별 상품 조회, 장바구니, 특정 상품 리뷰)
-                handleItemService(sc);
+            case 1: //상품 관련 메인 서비스 호출 (카테고리별 상품 조회, 장바구니, 특정 상품 리뷰)
+                handleItemMainService(sc);
                 break;
             case 2: //상품 관리자 서비스 핸들러 호출 (상품 등록, 삭제, 수정 기능)
+                handleItemAdminService(sc);
                 break;
             default:
                 serviceBreak();
         }
     }
 
+    //== 상품 서비스 1. 상품 관련 메인 서비스 핸들러 ==//
+    public void handleItemMainService(Scanner sc) {
+
+    }
+
+    //== 상품 서비스 2. 상품 관리자 서비스 핸들러 ==//
+    public void handleItemAdminService(Scanner sc) {
+    }
+
     //== 리뷰 서비스 핸들러 ==//
-    public void handleReviewService(Scanner sc){
+    private void handleReviewService(Scanner sc){
         int choice = sc.nextInt();
         displayReviewMenu();
 
@@ -106,23 +116,23 @@ public class ItemService {
     }
 
     private void updateReview(Scanner sc) {
-        System.out.println("수정할 리뷰 아이디를 입력해주세요.");
-        Long reviewId = sc.nextLong();
-        // 권한 확인
-        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
-
-        Review findReview = reviewRepository.findById(reviewId);
-
-        //해당 리뷰 작성자가 본인이 맞을 경우
-        if (Objects.equals(findReview.getMemberId(), memberId)) {
-            System.out.println("수정할 별점을 입력해 주세요.");
-            int stars = sc.nextInt();
-            System.out.println("수정할 리뷰 내용을 입력해주세요.");
-            String contents = sc.next();
-
-            Review review = Review.of(reviewId, stars, contents);
-            reviewRepository.updateById(reviewId, review);
-        }
+//        System.out.println("수정할 리뷰 아이디를 입력해주세요.");
+//        Long reviewId = sc.nextLong();
+//        // 권한 확인
+//        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
+//
+//        Review findReview = reviewRepository.findById(reviewId);
+//
+//        //해당 리뷰 작성자가 본인이 맞을 경우
+//        if (Objects.equals(findReview.getMemberId(), memberId)) {
+//            System.out.println("수정할 별점을 입력해 주세요.");
+//            int stars = sc.nextInt();
+//            System.out.println("수정할 리뷰 내용을 입력해주세요.");
+//            String contents = sc.next();
+//
+//            Review review = Review.of(reviewId, stars, contents);
+//            reviewRepository.updateById(reviewId, review);
+//        }
     }
 
     private static void displayItemMenu() {
