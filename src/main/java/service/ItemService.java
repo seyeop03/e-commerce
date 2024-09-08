@@ -44,7 +44,6 @@ public class ItemService {
 
     //== 상품 서비스 1. 상품 관련 메인 서비스 핸들러 ==//
     public void handleItemMainService(Scanner sc) {
- 
     }
 
     //== 상품 서비스 2. 상품 관리자 서비스 핸들러 ==//
