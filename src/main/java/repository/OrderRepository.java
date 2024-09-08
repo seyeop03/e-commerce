@@ -48,13 +48,13 @@ public class OrderRepository {
 
             List<Order> orderList = new ArrayList<>();
             while (rs.next()) {
-                Order orders = new Order(
+                Order order = new Order(
                         rs.getString("date"),
                         rs.getInt("total_price"),
                         OrderStatus.valueOf(rs.getString("status")),
                         rs.getLong("member_id")
                 );
-                orderList.add(orders);
+                orderList.add(order);
             }
             return orderList;
         } catch (SQLException e) {

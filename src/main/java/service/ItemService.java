@@ -4,18 +4,21 @@ import domain.Review;
 import common.Session;
 import repository.*;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 //기본 상품 기능(상품 등록, 상품 삭제, 상품 수정) + 카테고리별 조회(상품 조회, 장바구니, 특정 상품 리뷰)
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final OrderItemRepository orderItemRepository;
     private final CategoryRepository categoryRepository;
     private final CategoryItemRepository categoryItemRepository;
     private final ReviewRepository reviewRepository;
 
-    public ItemService(ItemRepository itemRepository, CategoryRepository categoryRepository, CategoryItemRepository categoryItemRepository, ReviewRepository reviewRepository) {
+    public ItemService(ItemRepository itemRepository, OrderItemRepository orderItemRepository, CategoryRepository categoryRepository, CategoryItemRepository categoryItemRepository, ReviewRepository reviewRepository) {
         this.itemRepository = itemRepository;
+        this.orderItemRepository = orderItemRepository;
         this.categoryRepository = categoryRepository;
         this.categoryItemRepository = categoryItemRepository;
         this.reviewRepository = reviewRepository;
@@ -51,19 +54,7 @@ public class ItemService {
                 insertReview(sc);
                 break;
             case 3: //리뷰수정
-                System.out.println("수정할 리뷰 아이디를 입력해주세요.");
-                Long reviewId = sc.nextLong();
-                // 권한 확인
-                Long memberId = Session.getInstance().getCurrentMember().getMemberId();
-
-                //샀는지 안샀는지
-                System.out.println("수정할 별점을 입력해 주세요.");
-                int stars = sc.nextInt();
-                System.out.println("수정할 리뷰 내용을 입력해주세요.");
-                String contents = sc.next();
-
-                Review review = Review.of(reviewId, stars, contents);
-                reviewRepository.updateById(reviewId, review);
+                updateReview(sc);
                 break;
             case 4: //리뷰삭제
                 deleteReview(sc);
@@ -93,17 +84,45 @@ public class ItemService {
         System.out.println("리뷰를 남기실 상품 ID를 입력해주세요.");
         Long itemId = sc.nextLong();
         //해당 상품을 구매한 이력이 있는지 체크
-
-        //성공 시
-        System.out.println("평점을 입력해주세요.");
-        int stars = sc.nextInt();
-        System.out.println("내용을 입력해주세요.");
-        String contents = sc.next();
-        // 연구대상
+        //이것은 리뷰테이블과는 관계가 없는 회원의 아이디
         Long memberId = Session.getInstance().getCurrentMember().getMemberId();
 
-        Review review = Review.of(stars, contents,memberId,itemId);
-        reviewRepository.save(review);
+        boolean isOrdered = orderItemRepository.existsByItemIdAndMemberId(itemId, memberId);
+
+        //성공 시
+        if (isOrdered){
+            //성공 시
+            System.out.println("평점을 입력해주세요.");
+            int stars = sc.nextInt();
+            System.out.println("내용을 입력해주세요.");
+            String contents = sc.next();
+
+            Review review = Review.of(stars, contents,memberId,itemId);
+            reviewRepository.save(review);
+        }else {
+            //실패 시
+            System.out.println("해당상품에 대한 리뷰를 작성하실 수 없습니다.");
+        }
+    }
+
+    private void updateReview(Scanner sc) {
+        System.out.println("수정할 리뷰 아이디를 입력해주세요.");
+        Long reviewId = sc.nextLong();
+        // 권한 확인
+        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
+
+        Review findReview = reviewRepository.findById(reviewId);
+
+        //해당 리뷰 작성자가 본인이 맞을 경우
+        if (Objects.equals(findReview.getMemberId(), memberId)) {
+            System.out.println("수정할 별점을 입력해 주세요.");
+            int stars = sc.nextInt();
+            System.out.println("수정할 리뷰 내용을 입력해주세요.");
+            String contents = sc.next();
+
+            Review review = Review.of(reviewId, stars, contents);
+            reviewRepository.updateById(reviewId, review);
+        }
     }
 
     private static void displayItemMenu() {

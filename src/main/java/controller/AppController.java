@@ -26,7 +26,7 @@ public class AppController {
     }
 
     private void displayMenu() {
-        System.out.println("\n===== Welcome to 쿠팡 =====");
+        System.out.println("\n===== Welcome to coupong =====");
         System.out.println("1. 회원 관련 서비스");
         System.out.println("2. 주문 관련 서비스");
         System.out.println("3. 상품 관련 서비스");

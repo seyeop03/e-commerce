@@ -19,7 +19,7 @@ public class Review {
         return new Review(reviewId,star,contents,null,null,null);
     }
 
-    public static Review of(int star, String contents,Long memberId, Long itemId){
+    public static Review of(int star, String contents, Long memberId, Long itemId){
         return new Review(null,star,contents,null,memberId,itemId);
     }
 }

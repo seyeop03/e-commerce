@@ -29,7 +29,7 @@ public class ReviewRepository {
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
 
-            List<Review> list = new ArrayList<>();
+            List<Review> reviews = new ArrayList<>();
             while(rs.next()){
                 Review review = new Review(
                     rs.getLong("review_id"),
@@ -39,7 +39,7 @@ public class ReviewRepository {
                     rs.getLong("member_id"),
                     rs.getLong("item_id")
                 );
-                list.add(review);
+                reviews.add(review);
             }
         } catch (SQLException e){
             throw new CustomDbException(e);
@@ -79,7 +79,7 @@ public class ReviewRepository {
             conn = getConnection();
             LocalDateTime localDateTime = LocalDateTime.now();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setLong(4, review.getReviewId());
+            pstmt.setLong(4, id);
             pstmt.setInt(1, review.getStar());
             pstmt.setString(2, review.getContents());
             pstmt.setObject(3, localDateTime);

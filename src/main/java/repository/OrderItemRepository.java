@@ -62,4 +62,35 @@ public class OrderItemRepository {
             close(conn, pstmt, rs);
         }
     }
+
+    public boolean existsByItemIdAndMemberId(Long itemId, Long memberId) {
+        String sql = "SELECT EXISTS (" +
+                "SELECT 1 FROM order_item oi " +
+                "INNER JOIN order o " +
+                "ON o.order_id = oi.order_id " +
+                "WHERE item_id = ? AND member_id = ?)";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, itemId);
+            pstmt.setLong(2, memberId);
+            rs = pstmt.executeQuery();
+
+            rs.next();
+            if (rs.getBoolean(1)) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        } catch (SQLException e) {
+            throw new CustomDbException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
+    }
 }

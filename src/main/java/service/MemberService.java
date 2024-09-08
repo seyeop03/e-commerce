@@ -186,10 +186,11 @@ public class MemberService {
     public void viewMemberInfo(Member member) {
         System.out.println("아이디:" + member.getUsername());
         System.out.println("이름:" + member.getName());
-        System.out.println("주소:" + member.getAddress());
-        System.out.println("집:" + member.getHome());
-        System.out.println("이메일:" + member.getEmail());
         System.out.println("생년월일:" + member.getBirth());
+        System.out.println("휴대폰번호:" + member.getHome());
+        System.out.println("이메일:" + member.getEmail());
+        System.out.println("주소:" + member.getAddress());
+        System.out.println("집전화:" + member.getHome());
         System.out.println("유저 역할:" + member.getRole());
     }
 

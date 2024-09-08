@@ -31,15 +31,13 @@ public class Member {
 
     @Override
     public String toString() {
-        return "memberId=" + memberId +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", name='" + name + '\'' +
-                ", birth='" + birth + '\'' +
-                ", phone='" + phone + '\'' +
-                ", email='" + email + '\'' +
-                ", address='" + address + '\'' +
-                ", home='" + home + '\'' +
-                ", role=" + role;
+        return "아이디:" + username + '\n' +
+                "이름:" + name + '\n' +
+                "생년월일:" + birth + '\n' +
+                "휴대폰번호:" + phone + '\n' +
+                "이메일:" + email + '\n' +
+                "주소:" + address + '\n' +
+                "집전화:" + home + '\n' +
+                "유저 역할:" + role;
     }
 }
