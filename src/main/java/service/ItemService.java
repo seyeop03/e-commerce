@@ -1,10 +1,12 @@
 package service;
 
+import common.Role;
+import domain.Item;
+import domain.Member;
 import domain.Review;
 import common.Session;
 import repository.*;
 
-import java.util.Objects;
 import java.util.Scanner;
 
 //기본 상품 기능(상품 등록, 상품 삭제, 상품 수정) + 카테고리별 조회(상품 조회, 장바구니, 특정 상품 리뷰)
@@ -30,6 +32,19 @@ public class ItemService {
         int choice = sc.nextInt();
         sc.nextLine();  // Consume newline
 
+//        Session session = Session.getInstance();
+//        Member currentMember = Session.getInstance().getCurrentMember();
+//        if (session.isAuthenticated()){
+//            if (isAdmin(currentMember)){
+//                handleItemAdminService(sc);
+//            }
+//            else {
+//                handleItemMainService(sc);
+//            }
+//        }
+        // 현재 멤버가 회원이면 handleItemMainService를 호출하고
+        // 현재 멤버가 관리자면 handleAdminService를 호출하면 되지 않을까 싶어서 작성해본 코드입니다.
+
         switch (choice){
             case 1: //상품 관련 메인 서비스 호출 (카테고리별 상품 조회, 장바구니, 특정 상품 리뷰)
                 handleItemMainService(sc);
@@ -44,6 +59,215 @@ public class ItemService {
 
     //== 상품 서비스 1. 상품 관련 메인 서비스 핸들러 ==//
     public void handleItemMainService(Scanner sc) {
+        displayUserMenu();
+        int choice = sc.nextInt();
+        switch (choice) {
+            case 1 :{
+                majorCategory();
+                int categoryChoice = sc.nextInt();
+                switch (categoryChoice) {
+                    case 1 : {
+                        electronMiddleCategory();
+                        int subChoice = sc.nextInt();
+                        switch (subChoice){
+                            case 1 : {
+                                String keyword = "냉장고";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                            case 2 : {
+                                String keyword = "TV";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                            case 3 : {
+                                String keyword = "세탁기";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                            case 4 : {
+                                String keyword = "청소기";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                            case 5 : {
+                                String keyword = "전자레인지";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                            case 6 : {
+                                String keyword = "컴퓨터";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                        }
+                    }
+                    case 2 : {
+                        petMiddleCategory();
+                        int subChoice = sc.nextInt();
+                        switch (subChoice) {
+                            case 1: {
+                                String keyword = "사료";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                            case 2: {
+                                String keyword = "간식";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                            case 3: {
+                                String keyword = "용품";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                        }
+                    }
+                    case 3 : {
+                        clothesMiddleCategory();
+                        int subChoice = sc.nextInt();
+                        switch (subChoice){
+                            case 1 : {
+                                String keyword = "상의";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                            case 2 : {
+                                String keyword = "하의";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                            case 3 : {
+                                String keyword = "신발";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                            case 4 : {
+                                String keyword = "속옷";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                            case 5 : {
+                                String keyword = "점퍼";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                            case 6 : {
+                                String keyword = "가방/악세서리";
+                                itemRepository.findByKeyword(keyword);
+                            }
+                        }
+                    }
+                    case 4 : {
+                        foodMiddleCategory();
+                    }
+                    case 5 : {
+                        livingMiddleCategory();
+                    }
+                    case 6 : {
+                        sportsMiddleCategory();
+                    }
+                    case 7 : {
+                        phraseMiddleCategory();
+                    }
+                    case 8 : {
+                        bookMiddleCategory();
+                    }
+                }
+            }
+            case 2 : {
+                System.out.println("검색어를 입력해주세요.");
+                String keyword = sc.next();
+                itemRepository.findByKeyword(keyword);
+            }
+            case 3 : {
+
+            }
+            case 4 : {
+                handleReviewService(sc);
+            }
+        }
+    }
+
+    private static boolean isAdmin(Member currentMember) {
+        return currentMember.getRole().equals(Role.ADMIN);
+    }
+
+    private static void bookMiddleCategory() {
+        System.out.println("===== 중분류 =====");
+        System.out.println("1. 소설");
+        System.out.println("2. 경제/경영");
+        System.out.println("3. IT");
+        System.out.println("4. 예술");
+        System.out.println("5. 기술/공학");
+        System.out.println("6. 유아");
+    }
+
+    private static void phraseMiddleCategory() {
+        System.out.println("===== 중분류 =====");
+        System.out.println("1. 필기구");
+        System.out.println("2. 노트/메모지");
+        System.out.println("3. 유아");
+    }
+
+    private static void sportsMiddleCategory() {
+        System.out.println("===== 중분류 =====");
+        System.out.println("1. 구기");
+        System.out.println("2. 헬스/요가");
+        System.out.println("3. 라켓스포츠");
+        System.out.println("4. 수영");
+        System.out.println("5. 낚시");
+    }
+
+    private static void livingMiddleCategory() {
+        System.out.println("===== 중분류 =====");
+        System.out.println("1. 잡화");
+        System.out.println("2. 세제");
+        System.out.println("3. 수납/정리");
+        System.out.println("4. 바디/헤어/구강/면도");
+        System.out.println("5. 가구/조명/인테리어");
+    }
+
+    private static void foodMiddleCategory() {
+        System.out.println("===== 중분류 =====");
+        System.out.println("1. 과일");
+        System.out.println("2. 축산");
+        System.out.println("3. 수산물/건어물");
+        System.out.println("4. 냉장/냉동/간편요리");
+        System.out.println("5. 쌀/잡곡");
+        System.out.println("6. 커피/원두/차");
+    }
+
+    private static void clothesMiddleCategory() {
+        System.out.println("===== 중분류 =====");
+        System.out.println("1. 상의");
+        System.out.println("2. 하의");
+        System.out.println("3. 신발");
+        System.out.println("4. 속옷");
+        System.out.println("5. 점퍼");
+        System.out.println("6. 가방/악세서리");
+    }
+
+    private static void petMiddleCategory() {
+        System.out.println("===== 중분류 =====");
+        System.out.println("1. 사료");
+        System.out.println("2. 간식");
+        System.out.println("3. 용품");
+    }
+
+    private static void electronMiddleCategory() {
+        System.out.println("===== 중분류 =====");
+        System.out.println("1. 냉장고");
+        System.out.println("2. TV");
+        System.out.println("3. 세탁기");
+        System.out.println("4. 청소기");
+        System.out.println("5. 전자레인지");
+        System.out.println("6. 컴퓨터");
+    }
+
+    private static void majorCategory() {
+        System.out.println("===== 대분류 =====");
+        System.out.println("1. 가전/디지털");
+        System.out.println("2. 반려동물용품");
+        System.out.println("3. 의류");
+        System.out.println("4. 식품");
+        System.out.println("5. 생활용품");
+        System.out.println("6. 스포츠/레저");
+        System.out.println("7. 문구/완구");
+        System.out.println("8. 도서");
+    }
+
+    private static void displayUserMenu() {
+        System.out.println("1. 카테고리별 상품 조회");
+        System.out.println("2. 상품 키워드 검색");
+        System.out.println("3. 장바구니");
+        System.out.println("4. 리뷰 서비스");
     }
 
     //== 상품 서비스 2. 상품 관리자 서비스 핸들러 ==//
@@ -51,9 +275,43 @@ public class ItemService {
         displayAdminMenu();
         int choice = sc.nextInt();
         switch (choice) {
-            case 1 :
-
+            case 1 : {
+                Item item = getItem(sc);
+                itemRepository.save(item);
+            }
+            case 2 :{
+                System.out.println("수정할 상품 ID");
+                Long id = sc.nextLong();
+                Item item = getItem(sc);
+                itemRepository.updateById(id,item);
+            }
+            case 3 :{
+                System.out.println("삭제할 상품 ID");
+                Long id = sc.nextLong();
+                itemRepository.deleteById(id);
+            }
         }
+    }
+
+    private static Item getItem(Scanner sc) {
+        System.out.println("상품 이름");
+        String name = sc.next();
+        System.out.println("상품 가격");
+        int price = sc.nextInt();
+        System.out.println("상품 제조날짜");
+        String manufactureDate = sc.next();
+        System.out.println("상품 원산지");
+        String origin = sc.next();
+        System.out.println("상품 제조사");
+        String company = sc.next();
+        System.out.println("상품 사이즈");
+        String size = sc.next();
+        System.out.println("상품 색상");
+        String color = sc.next();
+
+        Item item = Item.of(name,price,manufactureDate,origin,company,size,color);
+
+        return item;
     }
 
     private static void displayAdminMenu() {
@@ -88,7 +346,7 @@ public class ItemService {
     private void selectReview() {
         // 권한 확인
         Long memberId = Session.getInstance().getCurrentMember().getMemberId();
-//        reviewRepository.findxxx();
+        reviewRepository.findByMemberId(memberId);
     }
 
     private void deleteReview(Scanner sc) {
