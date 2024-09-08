@@ -48,6 +48,18 @@ public class ItemService {
 
     //== 상품 서비스 2. 상품 관리자 서비스 핸들러 ==//
     public void handleItemAdminService(Scanner sc) {
+        displayAdminMenu();
+        int choice = sc.nextInt();
+        switch (choice) {
+            case 1 :
+
+        }
+    }
+
+    private static void displayAdminMenu() {
+        System.out.println("1. 상품 등록");
+        System.out.println("2. 상품 수정");
+        System.out.println("3. 상품 삭제");
     }
 
     //== 리뷰 서비스 핸들러 ==//
