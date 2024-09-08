@@ -69,6 +69,10 @@ public class OrderItemRepository {
                 "INNER JOIN order o " +
                 "ON o.order_id = oi.order_id " +
                 "WHERE item_id = ? AND member_id = ?)";
+        // 리뷰의 아이템 아이디와 오더아이템의 아이템 아이디가 같아야한다.
+        // 멤버의 멤버아이디와 오더의 멤버 아이디가 같아야 한다.
+        // 오더 아이디를 조인해야 order item 아이디가 의미가 있기 때문
+
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;

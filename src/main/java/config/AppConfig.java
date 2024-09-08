@@ -26,6 +26,7 @@ public class AppConfig {
     public ItemService itemService() {
         return new ItemService(
                 new ItemRepository(),
+                new OrderItemRepository(),
                 new CategoryRepository(),
                 new CategoryItemRepository(),
                 new ReviewRepository()

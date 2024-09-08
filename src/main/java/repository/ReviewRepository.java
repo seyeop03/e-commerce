@@ -1,23 +1,19 @@
 package repository;
 
-import domain.Member;
 import domain.Review;
 import exception.CustomDbException;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 // 이 부분이 connection 을 import 하는 부분
 import static repository.connection.DBConnectionUtil.*;
 
 public class ReviewRepository {
 
-    // 리뷰보기
+    // (제품별)리뷰보기
     public void findxxx() {
         String sql = "SELECT * FROM review";
         Connection conn = null;
@@ -47,6 +43,14 @@ public class ReviewRepository {
             close(conn, pstmt, rs);
         }
     }
+    // (내)리뷰보기
+
+
+
+
+
+
+
 
     // 리뷰작성
     public void save(Review review) {
@@ -108,5 +112,39 @@ public class ReviewRepository {
             close(conn, pstmt, null);
         }
     }
+
+
+    public boolean findById(Long reviewId, Long memberId){
+        String sql = "SELECT EXISTS(SELECT 1" +
+                "FROM review r" +
+                "where review_id = ? and r.member_id = ?)";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, reviewId);
+            rs = pstmt.executeQuery();
+
+            rs.next();
+            if(rs.getBoolean(1)){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        finally {
+            close(conn, pstmt, rs);
+        }
+    }
+
+
+
 
 }
