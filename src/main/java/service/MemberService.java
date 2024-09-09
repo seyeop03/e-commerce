@@ -6,6 +6,7 @@ import domain.Member;
 import repository.MemberRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import repository.ReviewRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,6 +23,8 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private ReviewRepository reviewRepository = new ReviewRepository();
+
 
     public MemberService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
@@ -83,6 +86,14 @@ public class MemberService {
                         System.out.println("잘못된 입력입니다. 0~7 사이의 숫자를 입력하세요.");
                     }
                     break;
+                case 8:
+                    if (!session.isAuthenticated()) {
+                        System.out.println("로그인 상태가 아닙니다. 로그인 후 진행해주세요.");
+                    } else {
+                        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
+                        reviewRepository.findReviewById(memberId); // 회원 리뷰 보기
+                    }
+                    break;
                 case 0:
                     System.out.println("회원 서비스를 종료합니다.");
                     return;
@@ -103,6 +114,7 @@ public class MemberService {
         Member currentMember = Session.getInstance().getCurrentMember();
         if (currentMember != null && currentMember.getRole().equals(Role.ADMIN))
             System.out.println("7. 회원 전체 조회 (관리자)");
+        System.out.println("8. 회원 리뷰 보기");
         System.out.println("0. 뒤로 가기");
         System.out.print("선택: ");
     }

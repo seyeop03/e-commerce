@@ -15,8 +15,8 @@ public class Review {
     private Long itemId; //FK
 
     //== 정적 팩토리 메서드 ==//
-    public static Review of(Long reviewId, int star, String contents){
-        return new Review(reviewId,star,contents,null,null,null);
+    public static Review of(int star, String contents){
+        return new Review(null,star,contents,null,null,null);
     }
 
     public static Review of(int star, String contents, Long memberId, Long itemId){

@@ -13,9 +13,27 @@ import static repository.connection.DBConnectionUtil.*;
 
 public class ReviewRepository {
 
-    // (제품별)리뷰보기
-    public void findxxx() {
-        String sql = "SELECT * FROM review";
+    // (제품별)리뷰보기 -> 정렬기준(최신순/별점 높은순/별점 낮은순)
+    public void findByAll(Long itemId, int sort) {
+        String sql = "SELECT *" +
+                "FROM review r" +
+                "WHERE r.item_id = ?" +
+                "order by ";
+        switch (sort) {
+            case 1:
+                sql += "r.date DESC"; // 최신순
+                break;
+            case 2:
+                sql += "r.star DESC"; // 별점 높은순
+                break;
+            case 3:
+                sql += "r.star ASC"; // 별점 낮은순
+                break;
+            default:
+                sql += "r.date DESC"; // 기본값 최신순
+                break;
+        }
+
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -23,19 +41,58 @@ public class ReviewRepository {
         try{
             conn = getConnection();
             pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, itemId);
             rs = pstmt.executeQuery();
 
-            List<Review> reviews = new ArrayList<>();
+            List<Review> itemReviewList = new ArrayList<>();
             while(rs.next()){
                 Review review = new Review(
-                    rs.getLong("review_id"),
-                    rs.getInt("star"),
-                    rs.getString("contents"),
-                    rs.getString("date"),
-                    rs.getLong("member_id"),
-                    rs.getLong("item_id")
+                        rs.getLong("review_id"),
+                        rs.getInt("star"),
+                        rs.getString("contents"),
+                        rs.getString("date"),
+                        rs.getLong("member_id"),
+                        rs.getLong("item_id")
                 );
-                reviews.add(review);
+                itemReviewList.add(review);
+            }
+        }
+        catch (SQLException e){
+            throw new CustomDbException(e);
+        }
+        finally {
+            close(conn, pstmt, rs);
+        }
+    }
+
+
+    // (나의)리뷰보기
+    public void findReviewById(Long memberId){
+        String sql = "select * " +
+                "from review r" +
+                "where r.member_id = ?" +
+                "order by r.date desc";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, memberId);
+            rs = pstmt.executeQuery();
+
+            List<Review> list = new ArrayList<>();
+            while(rs.next()){
+                Review review = new Review(
+                        rs.getLong("review_id"),
+                        rs.getInt("star"),
+                        rs.getString("contents"),
+                        rs.getString("date"),
+                        rs.getLong("member_id"),
+                        rs.getLong("item_id")
+                );
+                list.add(review);
             }
         } catch (SQLException e){
             throw new CustomDbException(e);
@@ -43,13 +100,6 @@ public class ReviewRepository {
             close(conn, pstmt, rs);
         }
     }
-    // (내)리뷰보기
-
-
-
-
-
-
 
 
     // 리뷰작성
@@ -113,27 +163,6 @@ public class ReviewRepository {
         }
     }
 
-    public List<Review> findByMemberId(Long MemberId) {
-        String sql = "SELECT * from review where member_id = ?";
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = getConnection();
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
     public boolean findById(Long reviewId, Long memberId){
         String sql = "SELECT EXISTS(" +
                 "SELECT 1" +
@@ -160,7 +189,6 @@ public class ReviewRepository {
         }
         catch (SQLException e){
             throw new CustomDbException(e);
-            //  e.printStackTrace();
         }
         finally {
             close(conn, pstmt, rs);
