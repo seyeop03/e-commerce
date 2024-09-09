@@ -45,7 +45,6 @@ public class AppConfig {
         repositoryManager.put("ReviewRepository", reviewRepository);
     }
 
-
     private AppConfig() {
         // 의존성 주입
         memberService = new MemberService((MemberRepository) repositoryManager.get("MemberRepository"));
@@ -64,10 +63,6 @@ public class AppConfig {
                 (CategoryItemRepository) repositoryManager.get("CategoryItemRepository"),
                 (ReviewRepository) repositoryManager.get("ReviewRepository")
         );
-//        itemAdminService = new ItemAdminService(
-//                (ItemRepository) repositoryManager.get("ItemRepository"),
-//                (CategoryItemRepository) repositoryManager.get("CategoryItemRepository")
-//        );
     }
 
     public static AppConfig getInstance() {

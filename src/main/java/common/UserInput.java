@@ -25,7 +25,7 @@ public class UserInput {
         try {
             System.out.print(message);
             return sc.nextLong();
-        } catch (InputMismatchException e) {
+        } catch (IllegalFormatException e) {
             return -1L;
         }
     }
