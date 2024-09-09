@@ -18,8 +18,8 @@ import static repository.connection.DBConnectionUtil.*;
 public class ReviewRepository {
 
     // 리뷰보기
-    public void findxxx() {
-        String sql = "SELECT * FROM review";
+    public List<Review> findByMemberId(Long id) {
+        String sql = "SELECT * FROM review WHERE member_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -27,6 +27,7 @@ public class ReviewRepository {
         try{
             conn = getConnection();
             pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1,id);
             rs = pstmt.executeQuery();
 
             List<Review> reviews = new ArrayList<>();
@@ -41,6 +42,7 @@ public class ReviewRepository {
                 );
                 reviews.add(review);
             }
+            return reviews;
         } catch (SQLException e){
             throw new CustomDbException(e);
         } finally {
