@@ -86,10 +86,10 @@ public class ItemService {
         // 권한 확인
         Long memberId = Session.getInstance().getCurrentMember().getMemberId();
 
-
         reviewRepository.deleteById(reviewId);
     }
 
+    // 리뷰 작성하기 완료 #######################################
     private void insertReview(Scanner sc) {
         System.out.println("리뷰를 남기실 상품 ID를 입력해주세요.");
         Long itemId = sc.nextLong();
@@ -105,7 +105,7 @@ public class ItemService {
             System.out.println("내용을 입력해주세요.");
             String contents = sc.next();
 
-            Review review = Review.of(stars, contents,memberId,itemId);
+            Review review = Review.of(stars,contents,memberId,itemId);
             reviewRepository.save(review);
         }else {
             //실패 시
@@ -114,11 +114,11 @@ public class ItemService {
     }
 
     private void updateReview(Scanner sc) {
-        System.out.println("수정할 리뷰 아이디를 입력해주세요.");
+        System.out.println("수정할 리뷰의 아이디를 입력해주세요.");
         Long reviewId = sc.nextLong();
         // 권한 확인
         Long memberId = Session.getInstance().getCurrentMember().getMemberId();
-        boolean findMemberID = reviewRepository.findById(reviewId, memberId);
+//        boolean findMemberID = reviewRepository.findById(reviewId, memberId);
 
         //해당 리뷰 작성자가 본인이 맞을 경우
         if (findMemberID) {

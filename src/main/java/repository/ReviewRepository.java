@@ -113,11 +113,32 @@ public class ReviewRepository {
         }
     }
 
+    public List<Review> findByMemberId(Long MemberId) {
+        String sql = "SELECT * from review where member_id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     public boolean findById(Long reviewId, Long memberId){
-        String sql = "SELECT EXISTS(SELECT 1" +
+        String sql = "SELECT EXISTS(" +
+                "SELECT 1" +
                 "FROM review r" +
-                "where review_id = ? and r.member_id = ?)";
+                "where r.review_id = ? AND r.member_id = ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -126,6 +147,7 @@ public class ReviewRepository {
             conn = getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setLong(1, reviewId);
+            pstmt.setLong(2, memberId);
             rs = pstmt.executeQuery();
 
             rs.next();
@@ -136,8 +158,9 @@ public class ReviewRepository {
                 return false;
             }
         }
-        catch (Exception e){
-            e.printStackTrace();
+        catch (SQLException e){
+            throw new CustomDbException(e);
+            //  e.printStackTrace();
         }
         finally {
             close(conn, pstmt, rs);
