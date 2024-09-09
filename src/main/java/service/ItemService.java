@@ -34,28 +34,33 @@ public class ItemService {
     }
 
     //== 상품 서비스 핸들러 ==//
-    public void handleItemService(Scanner sc){
+    public void handleItemService(Scanner sc) {
         displayItemMenu();
         int choice = inputInt("선택: ", sc);
 
-        switch (choice){
+        switch (choice) {
             case 1: //상품 관련 메인 서비스 호출 (카테고리별 상품 조회, 장바구니, 특정 상품 리뷰)
                 //(주방 > 냄비 ,후라이 등등. .> 제품 선택하면 > 제품 데이터 + (제품 id에 대한)리뷰, 장바구니 담기)
                 handleItemMainService(sc);
 
-        switch (choice) {
-            case 1: //카테고리별 조회 서비스 호출
-                int middleNum = categoryItemViewService();
-                itemListView(middleNum); //중분류에 해당하는 상품들 조회
-                //장바구니 (장바구니 서비스) => cartService(itemId)
-                //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
-                break;
-            case 2: //상품 키워드 검색 서비스 호출
-                itemSearchService();
-                //장바구니 (장바구니 서비스) => cartService(itemId)
-                //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
-                break;
+                switch (choice) {
+                    case 1: //카테고리별 조회 서비스 호출
+                        int middleNum = categoryItemViewService();
+                        itemListView(middleNum); //중분류에 해당하는 상품들 조회
+                        //장바구니 (장바구니 서비스) => cartService(itemId)
+                        //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
+                        break;
+                    case 2: //상품 키워드 검색 서비스 호출
+                        itemSearchService();
+                        //장바구니 (장바구니 서비스) => cartService(itemId)
+                        //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
+                        break;
+                }
         }
+    }
+
+    private void handleItemMainService(Scanner sc) {
+
     }
 
     private void itemSearchService() {
@@ -66,7 +71,7 @@ public class ItemService {
     }
 
     private int categoryItemViewService() {
-
+        return 0;
     }
 
     private static boolean isAdmin(Member currentMember) {
@@ -117,7 +122,7 @@ public class ItemService {
         }
     }
 
-    // (제품 아이디별) 
+    // (제품 아이디별)
     private void selectReview(Scanner sc) {
         Long itemId = inputLong("리뷰 보실 제품의 아이디를 입력해 주세요 :", sc);
         System.out.println("""
@@ -144,6 +149,7 @@ public class ItemService {
                 break;
         }
         reviewRepository.findByAll(itemId, sort);
+        }
 
     private void selectReview() {
         // 권한 확인

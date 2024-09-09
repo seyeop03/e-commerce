@@ -27,7 +27,7 @@ public class CartSession {
         }
     }
 
-    public CartSession getInstance() {
+    public static CartSession getInstance() {
         if (instance == null) {
             return new CartSession();
         }

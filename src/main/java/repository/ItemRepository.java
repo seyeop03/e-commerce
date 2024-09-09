@@ -177,4 +177,27 @@ public class ItemRepository {
         }
 
     }
+
+    public int getItemPrice(Long id) {
+        String sql = "SELECT i.price FROM item i WHERE i.id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int price = 0;
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                price = rs.getInt("price");
+            }
+        } catch (SQLException e) {
+            throw new CustomDbException(e);
+        } finally {
+            close(conn,pstmt,rs);
+        }
+        return price;
+    }
 }

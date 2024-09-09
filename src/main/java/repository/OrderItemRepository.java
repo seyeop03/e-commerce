@@ -1,6 +1,5 @@
 package repository;
 
-import domain.Item;
 import domain.OrderItem;
 import exception.CustomDbException;
 
@@ -13,6 +12,27 @@ import java.util.List;
 import static repository.connection.DBConnectionUtil.*;
 
 public class OrderItemRepository {
+
+    public void save(OrderItem orderItem) {
+        String sql = "INSERT INTO order_item(quantity,price,order_id,item_id) VALUES (?,?,?,?)";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1,orderItem.getQuantity());
+            pstmt.setInt(2,orderItem.getPrice());
+            pstmt.setLong(3,orderItem.getOrderId());
+            pstmt.setLong(4,orderItem.getItemId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new CustomDbException(e);
+        } finally {
+            close(conn,pstmt,null);
+        }
+
+    }
 
     public List<OrderItem> findAll() {
         String sql = "";
@@ -69,10 +89,6 @@ public class OrderItemRepository {
                 "INNER JOIN order o " +
                 "ON o.order_id = oi.order_id " +
                 "WHERE item_id = ? AND member_id = ?)";
-        // 리뷰의 아이템 아이디와 오더아이템의 아이템 아이디가 같아야한다.
-        // 멤버의 멤버아이디와 오더의 멤버 아이디가 같아야 한다.
-        // 오더 아이디를 조인해야 order item 아이디가 의미가 있기 때문
-
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -98,4 +114,26 @@ public class OrderItemRepository {
         }
     }
 
+    public int getTotalPriceByOrderId(Long id) {
+        String sql = "SELECT oi.price FROM order_item oi WHERE oi.order_id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int totalPrice = 0;
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                totalPrice += rs.getInt("price");
+            }
+        } catch (SQLException e) {
+            throw new CustomDbException(e);
+        } finally {
+            close(conn,pstmt,rs);
+        }
+        return totalPrice;
+    }
 }
