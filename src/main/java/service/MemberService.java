@@ -2,6 +2,7 @@ package service;
 
 import common.Role;
 import common.Session;
+import common.UserInput;
 import domain.Member;
 import repository.MemberRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
+
+import static common.UserInput.*;
 
 //문제: 서비스 계층과 리포지토리 계층으로만 나누었는데,
 //만약 특정 서비스에서 다른 서비스의 기능을 호출하고 싶을 때 의존 관계 어떻게 할까?
@@ -121,23 +124,15 @@ public class MemberService {
 
     //== 회원 가입 ==//
     public void signUp(Scanner sc) {
-        System.out.print("아이디: ");
-        String username = sc.next();
-        System.out.print("패스워드: ");
-        String password = sc.next();
+        String username = inputString("아이디: ", sc);
+        String password = inputString("패스워드: ", sc);
         password = passwordEncoder.encode(password);
-        System.out.print("이름: ");
-        String name = sc.next();
-        System.out.print("생년월일: ");
-        String birth = sc.next();
-        System.out.print("휴대폰 번호: ");
-        String phone = sc.next();
-        System.out.print("이메일: ");
-        String email = sc.next();
-        System.out.print("주소: ");
-        String address = sc.next();
-        System.out.print("집 전화: ");
-        String home = sc.next();
+        String name = inputString("이름: ", sc);
+        String birth = inputString("생년월일: ", sc);
+        String phone = inputString("휴대폰 번호: ", sc);
+        String email = inputString("이메일: ", sc);
+        String address = inputString("주소: ", sc);
+        String home = inputString("집 전화: ", sc);
 
         Member member = Member.of(username, password, name, birth, phone, email, address, home, Role.USER);
 
@@ -161,10 +156,8 @@ public class MemberService {
 
     //== 회원 로그인 ==//
     public void signIn(Scanner sc) {
-        System.out.print("아이디를 입력해주세요: ");
-        String username = sc.nextLine();
-        System.out.print("비밀번호를 입력해주세요: ");
-        String password = sc.nextLine();
+        String username = inputString("아이디를 입력해주세요: ", sc);
+        String password = inputString("비밀번호를 입력해주세요: ", sc);
 
         Member findMember = memberRepository.findByUsername(username).orElse(null);
         if (findMember == null) {
@@ -208,22 +201,15 @@ public class MemberService {
 
     //== 회원 수정 ==//
     public void updateMemberInfo(Scanner sc) {
-        System.out.print("아이디: ");
-        String username = sc.next();
-        System.out.print("패스워드: ");
-        String password = sc.next();
-        System.out.print("이름: ");
-        String name = sc.next();
-        System.out.print("생년월일: ");
-        String birth = sc.next();
-        System.out.print("휴대폰 번호: ");
-        String phone = sc.next();
-        System.out.print("이메일: ");
-        String email = sc.next();
-        System.out.print("주소: ");
-        String address = sc.next();
-        System.out.print("집 전화: ");
-        String home = sc.next();
+        String username = inputString("아이디: ", sc);
+        String password = inputString("패스워드: ", sc);
+        password = passwordEncoder.encode(password);
+        String name = inputString("이름: ", sc);
+        String birth = inputString("생년월일: ", sc);
+        String phone = inputString("휴대폰 번호: ", sc);
+        String email = inputString("이메일: ", sc);
+        String address = inputString("주소: ", sc);
+        String home = inputString("집 전화: ", sc);
 
         Member member = Member.of(username, password, name, birth, phone, email, address, home, Role.USER);
         memberRepository.updateById(Session.getInstance().getCurrentMember().getMemberId(), member);
@@ -235,8 +221,7 @@ public class MemberService {
         Member currentMember = Session.getInstance().getCurrentMember();
         Long memberId = currentMember.getMemberId();
         System.out.println("회원탈퇴를 하시려면 \"" + currentMember.getUsername() + "\"를 입력해주세요.");
-        System.out.print("탈퇴 문구 입력: ");
-        String input = sc.next();
+        String input = inputString("탈퇴 문구 입력: ", sc);
 
         //입력 문자열이 일치하면 로그아웃 이후 탈퇴 진행
         if (input.equals(currentMember.getUsername())) {

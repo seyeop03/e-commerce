@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public class CartItem {
     private Long cartItemId; //PK
-    private Long totalPrice; //장바구니 총 가격
+    private Long totalPrice; //해당 상품 가격 * 수량
     private int count; //수량
     private Long cartId; //FK
     private Long itemId; //FK

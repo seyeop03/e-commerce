@@ -145,7 +145,7 @@ public class ItemRepository {
     }
 
     public List<Item> findByKeyword(String keyword) {
-        String sql = " SELECT * FROM item WHERE item.name like '%(?)%' ";
+        String sql = " SELECT * FROM item WHERE item.name like '%?%' ";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;

@@ -1,12 +1,18 @@
 package service;
 
 import common.UserInput;
+import common.Role;
+import common.UserInput;
+import domain.Item;
+import domain.Member;
 import domain.Review;
 import common.Session;
 import repository.*;
 
-import java.util.Objects;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+
+import static common.UserInput.*;
 
 import static common.UserInput.*;
 
@@ -30,31 +36,66 @@ public class ItemService {
     //== 상품 서비스 핸들러 ==//
     public void handleItemService(Scanner sc){
         displayItemMenu();
-        int choice = sc.nextInt();
-        sc.nextLine();  // Consume newline
+        int choice = inputInt("선택: ", sc);
 
         switch (choice){
             case 1: //상품 관련 메인 서비스 호출 (카테고리별 상품 조회, 장바구니, 특정 상품 리뷰)
                 //(주방 > 냄비 ,후라이 등등. .> 제품 선택하면 > 제품 데이터 + (제품 id에 대한)리뷰, 장바구니 담기)
                 handleItemMainService(sc);
+
+        switch (choice) {
+            case 1: //카테고리별 조회 서비스 호출
+                int middleNum = categoryItemViewService();
+                itemListView(middleNum); //중분류에 해당하는 상품들 조회
+                //장바구니 (장바구니 서비스) => cartService(itemId)
+                //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
                 break;
-            case 2: //상품 관리자 서비스 핸들러 호출 (상품 등록, 삭제, 수정 기능)
-                handleItemAdminService(sc);
+            case 2: //상품 키워드 검색 서비스 호출
+                itemSearchService();
+                //장바구니 (장바구니 서비스) => cartService(itemId)
+                //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
                 break;
-            default:
-                serviceBreak();
         }
     }
 
-    //== 상품 서비스 1. 상품 관련 메인 서비스 핸들러 ==//
-    public void handleItemMainService(Scanner sc) {
-    }
-    //== 상품 서비스 2. 상품 관리자 서비스 핸들러 ==//
-    public void handleItemAdminService(Scanner sc) {
+    private void itemSearchService() {
     }
 
-    //== 리뷰 서비스 핸들러 ==//
-    private void handleReviewService(Scanner sc){
+    private void itemListView(int middleNum) {
+
+    }
+
+    private int categoryItemViewService() {
+
+    }
+
+    private static boolean isAdmin(Member currentMember) {
+        return currentMember.getRole().equals(Role.ADMIN);
+    }
+
+    private static void displayUserMenu() {
+        System.out.println("1. 카테고리별 상품 조회");
+        System.out.println("2. 상품 키워드 검색");
+        System.out.println("3. 장바구니");
+        System.out.println("4. 리뷰 서비스");
+    }
+
+    private static Item getItem(Scanner sc) {
+        String name = inputString("상품 이름: ", sc);
+        int price = inputInt("상품 가격: ", sc);
+        String manufactureDate = inputString("상품 제조날짜: ", sc);
+        String origin = inputString("상품 원산지: ", sc);
+        String company = inputString("상품 제조사: ", sc);
+        String size = inputString("상품 사이즈: ", sc);
+        String color = inputString("상품 색상: ", sc);
+
+        Item item = Item.of(name,price,manufactureDate,origin,company,size,color);
+
+        return item;
+    }
+
+    //== 리뷰 서비스 ==//
+    public void handleReviewService(Scanner sc){
         int choice = sc.nextInt();
         displayReviewMenu();
 
@@ -103,6 +144,11 @@ public class ItemService {
                 break;
         }
         reviewRepository.findByAll(itemId, sort);
+
+    private void selectReview() {
+        // 권한 확인
+        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
+        reviewRepository.findByMemberId(memberId);
     }
 
 //    (회원(memberID)별 리뷰보기 완료)
@@ -169,9 +215,8 @@ public class ItemService {
 
     private static void displayItemMenu() {
         System.out.println("""
-                1. 리뷰서비스
-                2. ~~~~
-                3. ~~~~
+                1. 카테고리별 상품 조회
+                2. 상품 키워드 검색
                 """);
     }
     private static void displayReviewMenu() {

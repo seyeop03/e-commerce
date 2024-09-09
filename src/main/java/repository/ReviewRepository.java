@@ -16,9 +16,9 @@ public class ReviewRepository {
     // (제품별)리뷰보기 -> 정렬기준(최신순/별점 높은순/별점 낮은순)
     public void findByAll(Long itemId, int sort) {
         String sql = "SELECT *" +
-                "FROM review r" +
-                "WHERE r.item_id = ?" +
-                "order by ";
+                " FROM review r" +
+                " WHERE r.item_id = ?" +
+                " order by ";
         switch (sort) {
             case 1:
                 sql += "r.date DESC"; // 최신순
@@ -68,10 +68,14 @@ public class ReviewRepository {
 
     // (나의)리뷰보기
     public void findReviewById(Long memberId){
-        String sql = "select * " +
-                "from review r" +
-                "where r.member_id = ?" +
-                "order by r.date desc";
+        String sql = "select *" +
+                " from review r" +
+                " where r.member_id = ?" +
+                " order by r.date desc";
+      
+    // 리뷰보기
+    public List<Review> findByMemberId(Long id) {
+        String sql = "SELECT * FROM review WHERE member_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -79,7 +83,7 @@ public class ReviewRepository {
         try{
             conn = getConnection();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setLong(1, memberId);
+            pstmt.setLong(1, id);
             rs = pstmt.executeQuery();
 
             List<Review> list = new ArrayList<>();
@@ -94,6 +98,7 @@ public class ReviewRepository {
                 );
                 list.add(review);
             }
+            return reviews;
         } catch (SQLException e){
             throw new CustomDbException(e);
         } finally {

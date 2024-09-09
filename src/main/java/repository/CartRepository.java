@@ -14,7 +14,7 @@ import static repository.connection.DBConnectionUtil.*;
 
 public class CartRepository {
 
-    public void save(Cart cart) {
+    public void save(Long id) {
         String sql = "INSERT INTO cart(member_id) VALUES (?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -22,7 +22,7 @@ public class CartRepository {
         try {
             conn = getConnection();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setLong(1, cart.getMemberId());
+            pstmt.setLong(1, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new CustomDbException(e);

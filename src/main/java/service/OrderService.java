@@ -2,6 +2,7 @@ package service;
 
 import common.Role;
 import common.Session;
+import common.UserInput;
 import domain.Item;
 import domain.Member;
 import domain.Order;
@@ -13,6 +14,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+
+import static common.UserInput.*;
 
 public class OrderService {
     private final OrderRepository orderRepository;
@@ -42,8 +45,8 @@ public class OrderService {
         while (true){
             Member currentMember = Session.getInstance().getCurrentMember();
             displayOrderMenu();
-            int cho = sc.nextInt();
-            switch (cho) {
+            int choice = inputInt("선택: ", sc);
+            switch (choice) {
                 case 1:
                     if (isAdmin(currentMember)) {
                         allOrderSelect();
@@ -60,8 +63,7 @@ public class OrderService {
 
                 case 3:
                     if (!isAdmin(currentMember)){
-                        System.out.println("취소할 주문 번호");
-                        Long id = sc.nextLong();
+                        Long id = inputLong("취소할 주문 번호: ", sc);
                         Order order = orderRepository.findById(id).orElse(null);
                         if (order == null) {
                             System.out.println("그런 주문은 없습니다.");
@@ -73,7 +75,6 @@ public class OrderService {
                           }
                         }
                     }
-
             }
         }
     }
@@ -89,17 +90,15 @@ public class OrderService {
                 .getMemberId();
         orderRepository.findByMemberId(memberId);
 
-        System.out.println("상세 조회할 주문 번호");
-        Long id = sc.nextLong();
+        Long id = inputLong("상세 조회할 주문 번호", sc);
         List<OrderItem> orderItems = orderItemRepository.findByOrderId(id);
-
-        List<String> itemNames = orderItems.stream()
-                .map(o -> extractItemName(o.getItemId()))
-                .collect(Collectors.toList());
 
         if (orderItems.isEmpty()){
             System.out.println("주문 번호를 확인해주세요.");
         }else {
+            List<String> itemNames = orderItems.stream()
+                    .map(o -> extractItemName(o.getItemId()))
+                    .collect(Collectors.toList());
             System.out.println(orderItems);
             System.out.println(itemNames);
         }
@@ -111,10 +110,8 @@ public class OrderService {
     }
 
     private void changeOrderStatus(Scanner sc) {
-        System.out.println("변경할 주문 번호");
-        Long id = sc.nextLong();
-        System.out.println("변경할 상태");
-        String status = sc.next();
+        Long id = inputLong("변경할 주문 번호: ", sc);
+        String status = inputString("변경할 상태: ", sc);
         //orderRepository.updateById(id, status);
     }
 
