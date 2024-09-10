@@ -1,12 +1,10 @@
 package service;
 
-import common.UserInput;
-import common.Role;
+import common.*;
 import common.UserInput;
 import domain.Item;
 import domain.Member;
 import domain.Review;
-import common.Session;
 import repository.*;
 
 import java.util.Scanner;
@@ -39,50 +37,30 @@ public class ItemService {
         int choice = inputInt("선택: ", sc);
 
         switch (choice) {
-            case 1: //상품 관련 메인 서비스 호출 (카테고리별 상품 조회, 장바구니, 특정 상품 리뷰)
-                //(주방 > 냄비 ,후라이 등등. .> 제품 선택하면 > 제품 데이터 + (제품 id에 대한)리뷰, 장바구니 담기)
-                handleItemMainService(sc);
+            case 1: //카테고리별 조회 서비스 호출
+                CategoryType.printHighCategories(); //대분류 카테고리 출력
+                int highCategoryNum = inputInt("대분류 카테고리 번호 선택: ", sc);
+                CategoryType categoryName = CategoryType.fromIndex(highCategoryNum); //인덱스로 대분류 카테고리 열거형 객체 뽑아내기
+                CategoryType.printMiddleCategory(categoryName); //선택한 대분류에 대한 중분류 카테고리들을 출력
 
-                switch (choice) {
-                    case 1: //카테고리별 조회 서비스 호출
-                        int middleNum = categoryItemViewService();
-                        itemListView(middleNum); //중분류에 해당하는 상품들 조회
-                        //장바구니 (장바구니 서비스) => cartService(itemId)
-                        //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
-                        break;
-                    case 2: //상품 키워드 검색 서비스 호출
-                        itemSearchService();
-                        //장바구니 (장바구니 서비스) => cartService(itemId)
-                        //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
-                        break;
-                }
+                //todo: 상품 출력
+
+                //장바구니 (장바구니 서비스) => cartService(itemId)
+                //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
+                break;
+            case 2: //상품 키워드 검색 서비스 호출
+                itemSearchService();
+                //장바구니 (장바구니 서비스) => cartService(itemId)
+                //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
+                break;
         }
-    }
-
-    private void handleItemMainService(Scanner sc) {
-
     }
 
     private void itemSearchService() {
     }
 
-    private void itemListView(int middleNum) {
-
-    }
-
-    private int categoryItemViewService() {
-        return 0;
-    }
-
     private static boolean isAdmin(Member currentMember) {
         return currentMember.getRole().equals(Role.ADMIN);
-    }
-
-    private static void displayUserMenu() {
-        System.out.println("1. 카테고리별 상품 조회");
-        System.out.println("2. 상품 키워드 검색");
-        System.out.println("3. 장바구니");
-        System.out.println("4. 리뷰 서비스");
     }
 
     private static Item getItem(Scanner sc) {
@@ -168,9 +146,9 @@ public class ItemService {
         Long reviewId = inputLong("삭제할 리뷰의 아이디를 입력해 주세요 :", sc);
         // 권한 확인
         Long memberId = Session.getInstance().getCurrentMember().getMemberId();
-        boolean findMemberID = reviewRepository.findById(reviewId, memberId);
+        boolean isValidated = reviewRepository.existsByIdAndMemberId(reviewId, memberId);
 
-        if(findMemberID){
+        if(isValidated){
             reviewRepository.deleteById(reviewId);
             System.out.println("리뷰가 삭제 되었습니다.");
         }else{
@@ -203,10 +181,10 @@ public class ItemService {
     private void updateReview(Scanner sc) {
         Long reviewId = inputLong("수정할 리뷰의 아이디를 입력해주세요 :", sc);
         Long memberId = Session.getInstance().getCurrentMember().getMemberId();
-        boolean findMemberID = reviewRepository.findById(reviewId, memberId);
+        boolean isValidated = reviewRepository.existsByIdAndMemberId(reviewId, memberId);
 
         //해당 리뷰 작성자가 본인이 맞을 경우
-        if (findMemberID) {
+        if (isValidated) {
             int stars = inputInt("수정할 별점을 입력해 주세요 :", sc);
             String contents = inputString("수정할 리뷰 내용을 입력해주세요 :", sc);
 
@@ -221,10 +199,15 @@ public class ItemService {
 
     private static void displayItemMenu() {
         System.out.println("""
+                ================================
+                          메뉴 선택 화면
+                ================================
                 1. 카테고리별 상품 조회
                 2. 상품 키워드 검색
+                ================================
                 """);
     }
+
     private static void displayReviewMenu() {
         System.out.println("""
                 1. 리뷰보기

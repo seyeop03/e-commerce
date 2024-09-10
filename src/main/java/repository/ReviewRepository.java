@@ -169,7 +169,7 @@ public class ReviewRepository {
         }
     }
 
-    public boolean findById(Long reviewId, Long memberId){
+    public boolean existsByIdAndMemberId(Long reviewId, Long memberId){
         String sql = "SELECT EXISTS(" +
                 "SELECT 1" +
                 "FROM review r" +

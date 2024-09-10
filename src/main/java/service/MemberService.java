@@ -25,20 +25,20 @@ import static common.UserInput.*;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final ReviewRepository reviewRepository;
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    private ReviewRepository reviewRepository = new ReviewRepository();
 
 
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, ReviewRepository reviewRepository) {
         this.memberRepository = memberRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     //== 회원 서비스 핸들러 ==//
     public void handleMemberService(Scanner sc) {
         while (true) {
             displayMemberMenu();
-            int choice = sc.nextInt();
-            sc.nextLine();  // Consume newline
+            int choice = UserInput.inputInt("선택: ", sc);
 
             Session session = Session.getInstance();
 
@@ -119,7 +119,6 @@ public class MemberService {
             System.out.println("7. 회원 전체 조회 (관리자)");
         System.out.println("8. 회원 리뷰 보기");
         System.out.println("0. 뒤로 가기");
-        System.out.print("선택: ");
     }
 
     //== 회원 가입 ==//

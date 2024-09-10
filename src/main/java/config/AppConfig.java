@@ -47,7 +47,10 @@ public class AppConfig {
 
     private AppConfig() {
         // 의존성 주입
-        memberService = new MemberService((MemberRepository) repositoryManager.get("MemberRepository"));
+        memberService = new MemberService(
+                (MemberRepository) repositoryManager.get("MemberRepository"),
+                (ReviewRepository) repositoryManager.get("ReviewRepository")
+        );
         orderService = new OrderService(
                 (OrderRepository) repositoryManager.get("OrderRepository"),
                 (MemberRepository) repositoryManager.get("MemberRepository"),

@@ -156,7 +156,7 @@ public class ItemRepository {
             pstmt.setString(1,keyword);
             rs = pstmt.executeQuery();
 
-            List<Item> items = null;
+            List<Item> items = new ArrayList<>();
             while (rs.next()) {
                 Item item = Item.of(
                         rs.getString("name"),
@@ -173,12 +173,12 @@ public class ItemRepository {
         } catch (SQLException e){
             throw new CustomDbException(e);
         } finally {
-            close(conn,pstmt,rs);
+            close(conn, pstmt, rs);
         }
 
     }
 
-    public int getItemPrice(Long id) {
+    public int findItemPriceById(Long id) {
         String sql = "SELECT i.price FROM item i WHERE i.id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -190,7 +190,7 @@ public class ItemRepository {
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
 
-            while (rs.next()) {
+            if (rs.next()) {
                 price = rs.getInt("price");
             }
         } catch (SQLException e) {

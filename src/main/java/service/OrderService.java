@@ -84,16 +84,13 @@ public class OrderService {
 
 
         for (Long itemId : cart.keySet()) {
-            int itemPrice = itemRepository.getItemPrice(itemId);
+            int itemPrice = itemRepository.findItemPriceById(itemId);
             int price = (int) (itemPrice * cart.get(itemId));
             OrderItem orderItem = OrderItem.of(Math.toIntExact(cart.get(itemId)),price,orderId,itemId);
             orderItemRepository.save(orderItem);
         }
 
         order.setTotalPrice(orderItemRepository.getTotalPriceByOrderId(orderId));
-
-
-
         System.out.println("주문이 완료되었습니다.");
     }
 
