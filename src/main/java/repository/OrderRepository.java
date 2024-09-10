@@ -15,28 +15,27 @@ import static repository.connection.DBConnectionUtil.getConnection;
 
 public class OrderRepository {
 
-    public void save(Order order) {
-        String sql = "INSERT INTO orders(date, total_price, status, member_id) VALUES (?,?,?,?,?,?,?)";
+    public Long save(Order order) {
+        String sql = "INSERT INTO orders(status, member_id) VALUES (?,?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
         try {
             conn = getConnection();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1,order.getDate());
-            pstmt.setInt(2,order.getTotalPrice());
-            pstmt.setObject(3,order.getStatus());
-            pstmt.setLong(4,order.getMemberId());
-            pstmt.execute();
+            pstmt.setString(1,order.getStatus().name());
+            pstmt.setLong(2,order.getMemberId());
+
         } catch (SQLException e) {
             throw new CustomDbException(e);
         } finally {
             close(conn, pstmt, null);
         }
+        return order.getOrderId();
     }
 
-    public Long makeOrderPk(Order order) {
-        String sql = "INSERT INTO orders(date,member_id) values (?,?,)";
+    public Long getOrderPk(Order order) {
+        String sql = "INSERT INTO orders(status, member_id) values (?,?)";
 
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -45,7 +44,7 @@ public class OrderRepository {
         try {
             conn = getConnection();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setObject(1,order.getStatus());
+            pstmt.setString(1,order.getStatus().name());
             pstmt.setLong(2,order.getMemberId());
 
         } catch (SQLException e) {
@@ -67,7 +66,8 @@ public class OrderRepository {
 
             List<Order> orderList = new ArrayList<>();
             while (rs.next()) {
-                Order order = Order.of(
+                Order order = new Order(
+                        rs.getLong("order_id"),
                         rs.getString("date"),
                         rs.getInt("total_price"),
                         OrderStatus.valueOf(rs.getString("status")),
@@ -143,7 +143,7 @@ public class OrderRepository {
     }
 
 
-    public void updateById(Long id, String status) {
+    public void updateById(Long id, OrderStatus status) {
         String sql = "UPDATE orders SET status = ? WHERE order_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -151,7 +151,7 @@ public class OrderRepository {
         try {
             conn = getConnection();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, status);
+            pstmt.setString(1, status.name());
             pstmt.setLong(2, id);
             pstmt.executeUpdate();
         } catch (SQLException e) {

@@ -136,9 +136,9 @@ public class ItemService {
     }
 
 //    (회원(memberID)별 리뷰보기 완료)
-//    private void memberIdRewview(){
+//    private void memberIdReview(){
 //        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
-//        reviewRepository.findReviewById(memberId);
+//        reviewRepository.findByReviewId(memberId);
 //    }
 
     // (리뷰 삭제하기 완료)

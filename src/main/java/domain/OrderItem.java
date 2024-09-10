@@ -2,9 +2,11 @@ package domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
+@ToString
 public class OrderItem {
     private Long orderItemId; //PK
     private int quantity; //1개의 상품 수량

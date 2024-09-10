@@ -69,7 +69,7 @@ public class ItemRepository {
         }
     }
 
-    public Optional<Item> findById(Long id) {
+    public Optional<Item> findByItemId(Long id) {
         String sql = "SELECT * FROM item WHERE item_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
