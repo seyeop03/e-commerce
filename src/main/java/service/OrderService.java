@@ -64,11 +64,12 @@ public class OrderService {
 
     private void deleteOrder(Scanner sc, Member currentMember) {
         Long id = inputLong("취소할 주문 번호: ", sc);
-        Order order = orderRepository.findById(id).orElse(null);
+        Order order = orderRepository.findByOrderId(id).orElse(null);
         if (order == null) {
             System.out.println("그런 주문은 없습니다.");
         } else {
             if (Objects.equals(order.getMemberId(), currentMember.getMemberId())) {
+                orderItemRepository.deleteByOrderId(id);
                 orderRepository.deleteById(id);
             } else {
                 System.out.println("님이 주문한게 아닙니다.");
@@ -89,7 +90,7 @@ public class OrderService {
             orderItemRepository.save(orderItem);
         }
 
-        order.setTotalPrice(orderItemRepository.getTotalPriceByOrderId(orderId));
+        order.setTotalPrice(orderItemRepository.findPriceByOrderId(orderId));
         System.out.println("주문이 완료되었습니다.");
     }
 
@@ -145,10 +146,14 @@ public class OrderService {
 
             } else {
                 System.out.println("""
-                        1. 상품 검색 후 주문
-                        2. 본인 주문 조회
-                        3. 주문 취소
-                        """);
+                ================================
+                          메뉴 선택 화면
+                ================================
+                1. 장바구니에 담긴 상품 주문
+                2. 본인 주문내역 조회
+                3. 주문 취소
+                ================================
+                """);
             }
         } else {
             System.out.println("로그인 안됨");

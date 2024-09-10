@@ -7,6 +7,8 @@ import domain.Member;
 import domain.Review;
 import repository.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -49,14 +51,26 @@ public class ItemService {
                 //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
                 break;
             case 2: //상품 키워드 검색 서비스 호출
-                itemSearchService();
+                itemSearchService(sc);
+                cartService(sc);
                 //장바구니 (장바구니 서비스) => cartService(itemId)
                 //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
                 break;
         }
     }
 
-    private void itemSearchService() {
+    private void cartService(Scanner sc) {
+        System.out.println("장바구니에 담을 아이템 번호를 입력해주세요.");
+        Long itemId = sc.nextLong();
+        CartSession cartSession = CartSession.getInstance();
+        cartSession.addItem(itemId);
+    }
+
+    private void itemSearchService(Scanner sc) {
+        System.out.println("검색할 키워드를 입력해주세요.");
+        String keyword = sc.next();
+        List<Item> items = itemRepository.findByKeyword(keyword);
+        System.out.println(items);
     }
 
     private static boolean isAdmin(Member currentMember) {

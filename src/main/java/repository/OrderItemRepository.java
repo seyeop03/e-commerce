@@ -114,7 +114,7 @@ public class OrderItemRepository {
         }
     }
 
-    public int getTotalPriceByOrderId(Long id) {
+    public int findPriceByOrderId(Long id) {
         String sql = "SELECT oi.price FROM order_item oi WHERE oi.order_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -135,5 +135,22 @@ public class OrderItemRepository {
             close(conn,pstmt,rs);
         }
         return totalPrice;
+    }
+
+    public void deleteByOrderId(Long id) {
+        String sql = "DELETE FROM order_item WHERE order_id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new CustomDbException(e);
+        } finally {
+            close(conn,pstmt,null);
+        }
+
     }
 }
