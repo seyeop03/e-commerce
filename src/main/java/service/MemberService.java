@@ -86,7 +86,7 @@ public class MemberService {
                         System.out.println("로그인 상태가 아닙니다. 로그인 후 진행해주세요.");
                     } else {
                         Long memberId = Session.getInstance().getCurrentMember().getMemberId();
-                        reviewRepository.findByReviewId(memberId); // 회원 리뷰 보기
+                        reviewRepository.findByMemberId(memberId); // 회원 리뷰 보기
                     }
                     break;
                 case 8:

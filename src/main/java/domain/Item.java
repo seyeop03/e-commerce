@@ -2,11 +2,9 @@ package domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
 
 @AllArgsConstructor
 @Getter
-@ToString
 public class Item {
     private Long itemId;
     private String name;

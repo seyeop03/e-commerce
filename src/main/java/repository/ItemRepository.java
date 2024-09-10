@@ -145,7 +145,7 @@ public class ItemRepository {
     }
 
     public List<Item> findByKeyword(String keyword) {
-        String sql = " SELECT * FROM item WHERE item.name like ?";
+        String sql = " SELECT * FROM item WHERE item.name like '%?%' ";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -153,13 +153,12 @@ public class ItemRepository {
         try {
             conn = getConnection();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1,"%" +keyword+"%");
+            pstmt.setString(1,keyword);
             rs = pstmt.executeQuery();
 
             List<Item> items = new ArrayList<>();
             while (rs.next()) {
-                Item item = new Item(
-                        rs.getLong("item_id"),
+                Item item = Item.of(
                         rs.getString("name"),
                         rs.getInt("price"),
                         rs.getString("manufacture_date"),
@@ -180,7 +179,7 @@ public class ItemRepository {
     }
 
     public int findItemPriceById(Long id) {
-        String sql = "SELECT price FROM item WHERE item_id = ?";
+        String sql = "SELECT i.price FROM item i WHERE i.id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;

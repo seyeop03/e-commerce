@@ -33,9 +33,8 @@ public class OrderService {
 
     //== 주문 서비스 핸들러 ==//
     public void handleOrderService(Scanner sc) {
-        while (true){
-            Member currentMember = Session.getInstance().getCurrentMember();
-
+        Member currentMember = Session.getInstance().getCurrentMember();
+        while (true) {
             displayOrderMenu();
             int choice = inputInt("선택: ", sc);
             switch (choice) {
@@ -63,10 +62,11 @@ public class OrderService {
 
     private void deleteOrder(Scanner sc, Member currentMember) {
         Long id = inputLong("취소할 주문 번호: ", sc);
-        Order order = orderRepository.findByOrderId(id).orElse(null);
+        Order order = orderRepository.findById(id).orElse(null);
         if (order == null) {
             System.out.println("그런 주문은 없습니다.");
         } else {
+
             if (order.getMemberId().equals(currentMember.getMemberId()) && checkOrderStatus(order)) {
                 orderItemRepository.deleteByOrderId(id);
                 orderRepository.deleteById(id);
@@ -98,7 +98,7 @@ public class OrderService {
             orderItemRepository.save(orderItem);
         }
 
-        order.setTotalPrice(orderItemRepository.findPriceByOrderId(orderId));
+        order.setTotalPrice(orderItemRepository.getTotalPriceByOrderId(orderId));
         System.out.println("주문이 완료되었습니다.");
     }
 
@@ -155,18 +155,20 @@ public class OrderService {
                         ================================
                         1. 전체 주문 조회
                         2. 주문 상태 변경
+                        0. 뒤로 가기           
                         ================================
                         """);
             } else {
                 System.out.println("""
-                ================================
-                          메뉴 선택 화면
-                ================================
-                1. 장바구니에 담긴 상품 주문
-                2. 본인 주문내역 조회
-                3. 주문 취소
-                ================================
-                """);
+                        ================================
+                                   메뉴 선택 화면
+                        ================================
+                        1. 장바구니에 담긴 상품 주문하기
+                        2. 본인 주문 조회
+                        3. 주문            
+                        0. 뒤로 가기           
+                        ================================
+                        """);
             }
         } else {
             System.out.println("로그인 안됨");
