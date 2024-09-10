@@ -1,8 +1,6 @@
 package service;
 
-import common.Role;
-import common.Session;
-import common.UserInput;
+import common.*;
 import domain.Item;
 import domain.Member;
 import domain.Order;
@@ -10,9 +8,8 @@ import domain.OrderItem;
 import repository.*;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Scanner;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static common.UserInput.*;
@@ -36,14 +33,9 @@ public class OrderService {
 
     //== 주문 서비스 핸들러 ==//
     public void handleOrderService(Scanner sc) {
-        // 상품 조회 -> 장바구니 -> 주문 생성
-        // 본인 주문 조회
-        // 주문 취소
-
-        // 전체 주문 조회
-        // 주문 상태 변경
         while (true){
             Member currentMember = Session.getInstance().getCurrentMember();
+
             displayOrderMenu();
             int choice = inputInt("선택: ", sc);
             switch (choice) {
@@ -51,7 +43,8 @@ public class OrderService {
                     if (isAdmin(currentMember)) {
                         allOrderSelect();
                     }else {
-                        itemSelect();
+                        createOrder(currentMember);
+
                     }
 
                 case 2:
@@ -63,20 +56,45 @@ public class OrderService {
 
                 case 3:
                     if (!isAdmin(currentMember)){
-                        Long id = inputLong("취소할 주문 번호: ", sc);
-                        Order order = orderRepository.findById(id).orElse(null);
-                        if (order == null) {
-                            System.out.println("그런 주문은 없습니다.");
-                        } else {
-                          if (Objects.equals(order.getMemberId(), currentMember.getMemberId())) {
-                              orderRepository.deleteById(id);
-                          } else {
-                              System.out.println("님이 주문한게 아닙니다.");
-                          }
-                        }
+                        deleteOrder(sc, currentMember);
                     }
             }
         }
+    }
+
+    private void deleteOrder(Scanner sc, Member currentMember) {
+        Long id = inputLong("취소할 주문 번호: ", sc);
+        Order order = orderRepository.findById(id).orElse(null);
+        if (order == null) {
+            System.out.println("그런 주문은 없습니다.");
+        } else {
+            if (Objects.equals(order.getMemberId(), currentMember.getMemberId())) {
+                orderRepository.deleteById(id);
+            } else {
+                System.out.println("님이 주문한게 아닙니다.");
+            }
+        }
+    }
+
+    private void createOrder(Member currentMember) {
+        Map<Long,Long> cart = CartSession.getInstance().getCart();
+        Long memberId = currentMember.getMemberId();
+        Order order = Order.of(OrderStatus.PAYMENT_WAITING,memberId);
+        Long orderId = orderRepository.makeOrderPk(order);
+
+
+        for (Long itemId : cart.keySet()) {
+            int itemPrice = itemRepository.getItemPrice(itemId);
+            int price = (int) (itemPrice * cart.get(itemId));
+            OrderItem orderItem = OrderItem.of(Math.toIntExact(cart.get(itemId)),price,orderId,itemId);
+            orderItemRepository.save(orderItem);
+        }
+
+        order.setTotalPrice(orderItemRepository.getTotalPriceByOrderId(orderId));
+
+
+
+        System.out.println("주문이 완료되었습니다.");
     }
 
     private static boolean isAdmin(Member currentMember) {
@@ -112,11 +130,7 @@ public class OrderService {
     private void changeOrderStatus(Scanner sc) {
         Long id = inputLong("변경할 주문 번호: ", sc);
         String status = inputString("변경할 상태: ", sc);
-        //orderRepository.updateById(id, status);
-    }
-
-    private void itemSelect() {
-        itemRepository.findAll();
+        orderRepository.updateById(id, status);
     }
 
     private void allOrderSelect() {

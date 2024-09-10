@@ -13,7 +13,7 @@ public class OrderItem {
     private Long itemId; //FK
 
     //== 정적 팩토리 메서드 ==//
-    public OrderItem of(int quantity, int price, Long orderId, Long itemId) {
+    public static OrderItem of(int quantity, int price, Long orderId, Long itemId) {
         return new OrderItem(null, quantity, price, orderId, itemId);
     }
 }
