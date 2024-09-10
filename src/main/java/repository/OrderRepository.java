@@ -83,7 +83,7 @@ public class OrderRepository {
         }
     }
 
-    public Optional<Order> findById(Long id) {
+    public Optional<Order> findByOrderId(Long id) {
         String sql = "SELECT * FROM orders WHERE order_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
