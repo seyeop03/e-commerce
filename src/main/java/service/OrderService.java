@@ -82,7 +82,6 @@ public class OrderService {
         Order order = Order.of(OrderStatus.PAYMENT_WAITING,memberId);
         Long orderId = orderRepository.makeOrderPk(order);
 
-
         for (Long itemId : cart.keySet()) {
             int itemPrice = itemRepository.findItemPriceById(itemId);
             int price = (int) (itemPrice * cart.get(itemId));
