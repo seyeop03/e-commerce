@@ -33,9 +33,8 @@ public class OrderService {
 
     //== 주문 서비스 핸들러 ==//
     public void handleOrderService(Scanner sc) {
-        while (true){
-            Member currentMember = Session.getInstance().getCurrentMember();
-
+        Member currentMember = Session.getInstance().getCurrentMember();
+        while (true) {
             displayOrderMenu();
             int choice = inputInt("선택: ", sc);
             switch (choice) {
@@ -44,7 +43,6 @@ public class OrderService {
                         allOrderSelect();
                     }else {
                         createOrder(currentMember);
-
                     }
 
                 case 2:
@@ -139,8 +137,9 @@ public class OrderService {
         if (currentMember != null) {
             if (isAdmin(currentMember)) {
                 System.out.println("""
-                        1.전체 주문 조회
-                        2.주문 상태 변경
+                        1. 전체 주문 조회
+                        2. 주문 상태 변경
+                        0. 뒤로 가기
                         """);
 
             } else {
@@ -148,6 +147,7 @@ public class OrderService {
                         1. 상품 검색 후 주문
                         2. 본인 주문 조회
                         3. 주문 취소
+                        0. 뒤로 가기
                         """);
             }
         } else {

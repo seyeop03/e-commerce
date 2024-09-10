@@ -65,16 +65,7 @@ public class ReviewRepository {
         }
     }
 
-
     // (나의)리뷰보기
-    public void findReviewById(Long memberId) {
-        String sql = "select *" +
-                " from review r" +
-                " where r.member_id = ?" +
-                " order by r.date desc";
-
-    }
-    // 리뷰보기
     public List<Review> findByMemberId(Long id) {
         String sql = "SELECT * FROM review WHERE member_id = ?";
         Connection conn = null;
