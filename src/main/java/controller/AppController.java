@@ -2,15 +2,16 @@ package controller;
 
 import common.Role;
 import common.Session;
-import config.AppConfig;
 import domain.Member;
 //import service.ItemAdminService;
+import config.AppConfig;
 import service.ItemService;
 import service.MemberService;
 import service.OrderService;
 
-import java.sql.SQLException;
 import java.util.Scanner;
+
+import static common.UserInput.*;
 
 public class AppController {
 
@@ -24,11 +25,11 @@ public class AppController {
         Scanner sc = new Scanner(System.in);
 
         while (true) {
-            displayMenu(); //메뉴 출력
-            int choice = sc.nextInt(); //사용자 입력
-            dispatch(choice, sc); //입력 값에 따라 서비스 호출
+                displayMenu(); //메뉴 출력
+                int choice = inputInt("메뉴를 선택하세요: ", sc); //사용자 입력
+                dispatch(choice, sc); //입력 값에 따라 서비스 호출
+            }
         }
-    }
 
     private void displayMenu() {
         System.out.println("\n===== Welcome to coupong =====");
@@ -40,7 +41,6 @@ public class AppController {
 //            System.out.println("4. 상품 관리자 서비스");
 //        }
         System.out.println("0. 종료");
-        System.out.print("메뉴를 선택하세요: ");
     }
 
     private void dispatch(int choice, Scanner sc) {
@@ -52,7 +52,7 @@ public class AppController {
                 orderService.handleOrderService(sc); //주문 서비스
                 break;
             case 3 :
-                itemService.handleItemService(sc); //상품 서비스 => 카테고리/장바구니/리뷰
+                itemService.handleItemService(sc); //상품 서비스
                 break;
 //            case 4 :
 //                Member currentMember = Session.getInstance().getCurrentMember();
