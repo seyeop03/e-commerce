@@ -67,7 +67,7 @@ public class ReviewRepository {
 
 
     // (나의)리뷰보기
-    public void findReviewById(Long memberId) {
+    public void findByReviewId(Long memberId) {
         String sql = "select *" +
                 " from review r" +
                 " where r.member_id = ?" +

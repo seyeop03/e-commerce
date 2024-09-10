@@ -4,9 +4,11 @@ import common.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
+@ToString
 public class Order {
     private Long orderId; //PK
     private String date; //주문 날짜
@@ -19,7 +21,7 @@ public class Order {
         return new Order(null, date, totalPrice, status, memberId);
     }
 
-    public static Order of(OrderStatus status, Long memberId) {
-        return new Order(null,null,0, status, memberId);
+    public static Order of(String date, OrderStatus status, Long memberId) {
+        return new Order(null,date,0, status, memberId);
     }
 }

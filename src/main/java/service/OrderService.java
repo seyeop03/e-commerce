@@ -44,7 +44,6 @@ public class OrderService {
                         allOrderSelect();
                     }else {
                         createOrder(currentMember);
-
                     }
 
                 case 2:
@@ -68,25 +67,34 @@ public class OrderService {
         if (order == null) {
             System.out.println("그런 주문은 없습니다.");
         } else {
-            if (Objects.equals(order.getMemberId(), currentMember.getMemberId())) {
+            if (order.getMemberId().equals(currentMember.getMemberId()) && checkOrderStatus(order)) {
                 orderItemRepository.deleteByOrderId(id);
                 orderRepository.deleteById(id);
+            } else if (order.getMemberId().equals(currentMember.getMemberId()) && !checkOrderStatus(order)){
+                System.out.println("주문 취소 가능 상태가 아닙니다.");
             } else {
-                System.out.println("님이 주문한게 아닙니다.");
+                System.out.println(currentMember.getName() + "님의 주문이 아닙니다.");
             }
         }
+    }
+
+    private static boolean checkOrderStatus(Order order) {
+        return order.getStatus().equals(OrderStatus.valueOf("PAYMENT_WAITING"))
+                || order.getStatus().equals(OrderStatus.valueOf("PAYMENT_COMPLETED"))
+                || order.getStatus().equals(OrderStatus.valueOf("PREPARING"));
     }
 
     private void createOrder(Member currentMember) {
         Map<Long,Long> cart = CartSession.getInstance().getCart();
         Long memberId = currentMember.getMemberId();
-        Order order = Order.of(OrderStatus.PAYMENT_WAITING,memberId);
-        Long orderId = orderRepository.makeOrderPk(order);
+        String date = LocalDate.now().toString();
+        Order order = Order.of(date, OrderStatus.PAYMENT_WAITING, memberId);
+        Long orderId = orderRepository.save(order);
 
         for (Long itemId : cart.keySet()) {
             int itemPrice = itemRepository.findItemPriceById(itemId);
             int price = (int) (itemPrice * cart.get(itemId));
-            OrderItem orderItem = OrderItem.of(Math.toIntExact(cart.get(itemId)),price,orderId,itemId);
+            OrderItem orderItem = OrderItem.of(Math.toIntExact(cart.get(itemId)), price, orderId, itemId);
             orderItemRepository.save(orderItem);
         }
 
@@ -103,7 +111,8 @@ public class OrderService {
         Long memberId = Session.getInstance()
                 .getCurrentMember()
                 .getMemberId();
-        orderRepository.findByMemberId(memberId);
+        List<Order> orderList = orderRepository.findByMemberId(memberId);
+        System.out.println(orderList);
 
         Long id = inputLong("상세 조회할 주문 번호", sc);
         List<OrderItem> orderItems = orderItemRepository.findByOrderId(id);
@@ -120,19 +129,20 @@ public class OrderService {
     }
 
     private String extractItemName(Long itemId){
-        Item item = itemRepository.findById(itemId).orElse(null);
+        Item item = itemRepository.findByItemId(itemId).orElse(null);
         return item.getName();
     }
 
     private void changeOrderStatus(Scanner sc) {
         Long id = inputLong("변경할 주문 번호: ", sc);
         String status = inputString("변경할 상태: ", sc);
-        orderRepository.updateById(id, status);
+        OrderStatus orderStatus = OrderStatus.valueOf(status);
+        orderRepository.updateById(id, orderStatus);
     }
 
     private void allOrderSelect() {
-        orderRepository.findAll();
-        System.out.println("상세 조회할 주문 번호");
+        List<Order> orderList = orderRepository.findAll();
+        System.out.println(orderList);
     }
 
     private void displayOrderMenu() {
@@ -140,10 +150,13 @@ public class OrderService {
         if (currentMember != null) {
             if (isAdmin(currentMember)) {
                 System.out.println("""
-                        1.전체 주문 조회
-                        2.주문 상태 변경
+                        ================================
+                                   메뉴 선택 화면
+                        ================================
+                        1. 전체 주문 조회
+                        2. 주문 상태 변경
+                        ================================
                         """);
-
             } else {
                 System.out.println("""
                 ================================
