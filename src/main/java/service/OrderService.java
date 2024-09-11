@@ -101,7 +101,9 @@ public class OrderService {
             orderItemRepository.save(orderItem);
         }
 
-//        order.setTotalPrice(orderItemRepository.getTotalPriceByOrderId(orderId));
+
+        order.setTotalPrice(orderItemRepository.findPriceByOrderId(orderId));
+
         System.out.println("주문이 완료되었습니다.");
     }
 
@@ -158,7 +160,7 @@ public class OrderService {
                         ================================
                         1. 전체 주문 조회
                         2. 주문 상태 변경
-                        0. 뒤로 가기           
+                        0. 뒤로 가기
                         ================================
                         """);
             } else {

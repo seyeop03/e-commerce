@@ -22,7 +22,9 @@ public class Order {
         return new Order(null, date, status, memberId);
     }
 
+
 //    public static Order of(String date, OrderStatus status, Long memberId) {
 //        return new Order(null,date, status, memberId);
 //    }
+
 }

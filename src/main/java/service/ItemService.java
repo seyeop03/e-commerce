@@ -8,7 +8,9 @@ import domain.Review;
 import repository.*;
 
 import java.util.List;
+
 import java.util.Map;
+
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -86,11 +88,27 @@ public class ItemService {
         Long itemId = inputLong("장바구니에 담을 아이템 번호를 입력해주세요.",sc);
         cartSession.addItem(itemId);
 
+
     }
 
     private void itemSearchService(Scanner sc) {
         String keyword = inputString("검색할 키워드를 입력해주세요.", sc);
         itemRepository.findByKeyword(keyword).forEach(System.out::println);
+
+           
+    }
+
+    private void cartService(Scanner sc) {
+        Long itemId = inputLong("장바구니에 담을 아이템 번호를 입력해주세요: ", sc);
+        CartSession cartSession = CartSession.getInstance();
+        cartSession.addItem(itemId);
+    }
+
+    private void itemSearchService(Scanner sc) {
+        String keyword = inputString("검색할 키워드를 입력해주세요: ", sc);
+        List<Item> items = itemRepository.findByKeyword(keyword);
+        System.out.println(items);
+
     }
 
     private static boolean isAdmin(Member currentMember) {
