@@ -73,12 +73,6 @@ public class ItemService {
                     }
                     //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
                     break;
-                case 3:
-                    Set<Long> keyset = cartSession.getCart().keySet();
-                    for (Long key : keyset) {
-                        System.out.println(key + ":" + cartSession.getCart().get(key));
-                    }
-                    break;
                 case 0:
                     return;
 
@@ -99,12 +93,6 @@ public class ItemService {
 
     private void cartService(CartSession cartSession, Scanner sc) {
         Long itemId = inputLong("장바구니에 담을 아이템 번호를 입력해주세요: ",sc);
-        cartSession.addItem(itemId);
-    }
-
-    private void cartService(Scanner sc) {
-        Long itemId = inputLong("장바구니에 담을 아이템 번호를 입력해주세요: ", sc);
-        CartSession cartSession = CartSession.getInstance();
         cartSession.addItem(itemId);
     }
 

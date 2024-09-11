@@ -16,7 +16,7 @@ import static repository.connection.DBConnectionUtil.getConnection;
 public class OrderRepository {
 
     public Long save(Order order) {
-        String sql = "INSERT INTO orders(date, status, member_id) VALUES (?,?,?)";
+        String sql = "INSERT INTO orders(date, total_price, status, member_id) VALUES (?,?,?,?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -26,8 +26,9 @@ public class OrderRepository {
             conn = getConnection();
             pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1,order.getDate());
-            pstmt.setString(2,order.getStatus().name());
-            pstmt.setLong(3,order.getMemberId());
+            pstmt.setInt(2,0);
+            pstmt.setString(3,order.getStatus().name());
+            pstmt.setLong(4,order.getMemberId());
             pstmt.executeUpdate();
             rs = pstmt.getGeneratedKeys();
             if (rs.next()) {
@@ -166,6 +167,24 @@ public class OrderRepository {
             throw new CustomDbException(e);
         } finally {
             close(conn, pstmt, null);
+        }
+    }
+
+    public void updateTotalPriceById(int totalPrice, Long id) {
+        String sql = "UPDATE orders SET total_price = ? WHERE order_id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1,totalPrice);
+            pstmt.setLong(2,id);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new CustomDbException(e);
+        } finally {
+            close(conn,pstmt,null);
         }
     }
 

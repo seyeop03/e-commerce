@@ -124,6 +124,7 @@ public class OrderItemRepository {
         try {
             conn = getConnection();
             pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1,id);
             rs = pstmt.executeQuery();
 
             while (rs.next()) {

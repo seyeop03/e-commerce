@@ -28,8 +28,6 @@ public class AppConfig {
         ItemRepository itemRepository = new ItemRepository();
         OrderRepository orderRepository = new OrderRepository();
         OrderItemRepository orderItemRepository = new OrderItemRepository();
-        CartRepository cartRepository = new CartRepository();
-        CartItemRepository cartItemRepository = new CartItemRepository();
         CategoryRepository categoryRepository = new CategoryRepository();
         CategoryItemRepository categoryItemRepository = new CategoryItemRepository();
         ReviewRepository reviewRepository = new ReviewRepository();
@@ -38,8 +36,6 @@ public class AppConfig {
         repositoryManager.put("ItemRepository", itemRepository);
         repositoryManager.put("OrderRepository", orderRepository);
         repositoryManager.put("OrderItemRepository", orderItemRepository);
-        repositoryManager.put("CartRepository", cartRepository);
-        repositoryManager.put("CartItemRepository", cartItemRepository);
         repositoryManager.put("CategoryRepository", categoryRepository);
         repositoryManager.put("CategoryItemRepository", categoryItemRepository);
         repositoryManager.put("ReviewRepository", reviewRepository);
@@ -53,11 +49,10 @@ public class AppConfig {
         );
         orderService = new OrderService(
                 (OrderRepository) repositoryManager.get("OrderRepository"),
-                (MemberRepository) repositoryManager.get("MemberRepository"),
-                (CartRepository) repositoryManager.get("CartRepository"),
-                (CartItemRepository) repositoryManager.get("CartItemRepository"),
                 (ItemRepository) repositoryManager.get("ItemRepository"),
-                (OrderItemRepository) repositoryManager.get("OrderItemRepository")
+                (OrderItemRepository) repositoryManager.get("OrderItemRepository"),
+                (ReviewRepository) repositoryManager.get("ReviewRepository")
+
         );
         itemService = new ItemService(
                 (ItemRepository) repositoryManager.get("ItemRepository"),
