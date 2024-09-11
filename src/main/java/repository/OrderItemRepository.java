@@ -139,7 +139,7 @@ public class OrderItemRepository {
 
     public void deleteByOrderId(Long id) {
 
-        String sql = "DELETE FROM order_item WHRER order_id = ?";
+        String sql = "DELETE FROM order_item WHERE order_id = ?";
 
 
         Connection conn = null;

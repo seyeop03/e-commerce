@@ -16,7 +16,7 @@ import static repository.connection.DBConnectionUtil.getConnection;
 public class OrderRepository {
 
     public Long save(Order order) {
-        String sql = "INSERT INTO orders( date, status, member_id) VALUES (?,?,?)";
+        String sql = "INSERT INTO orders(date, status, member_id) VALUES (?,?,?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -77,7 +77,7 @@ public class OrderRepository {
                 Order order = new Order(
                         rs.getLong("order_id"),
                         rs.getString("date"),
-//                        rs.getInt("total_price"),
+                        rs.getInt("total_price"),
                         OrderStatus.valueOf(rs.getString("status")),
                         rs.getLong("member_id")
                 );
