@@ -34,6 +34,7 @@ public class OrderService {
     //== 주문 서비스 핸들러 ==//
     public void handleOrderService(Scanner sc) {
         Member currentMember = Session.getInstance().getCurrentMember();
+        CartSession cartSession = CartSession.getInstance();
         while (true) {
             displayOrderMenu();
             int choice = inputInt("선택: ", sc);
@@ -42,7 +43,7 @@ public class OrderService {
                     if (isAdmin(currentMember)) {
                         allOrderSelect();
                     }else {
-                        createOrder(currentMember);
+                        createOrder(cartSession, currentMember);
                     }
 
                 case 2:
@@ -84,21 +85,25 @@ public class OrderService {
                 || order.getStatus().equals(OrderStatus.valueOf("PREPARING"));
     }
 
-    private void createOrder(Member currentMember) {
-        Map<Long,Long> cart = CartSession.getInstance().getCart();
+    private void createOrder(CartSession cartSession, Member currentMember) {
+
         Long memberId = currentMember.getMemberId();
         String date = LocalDate.now().toString();
         Order order = Order.of(date, OrderStatus.PAYMENT_WAITING, memberId);
         Long orderId = orderRepository.save(order);
+        System.out.println(orderId);
+        System.out.println("ok");
 
-        for (Long itemId : cart.keySet()) {
+        for (Long itemId : cartSession.getCart().keySet()) {
             int itemPrice = itemRepository.findItemPriceById(itemId);
-            int price = (int) (itemPrice * cart.get(itemId));
-            OrderItem orderItem = OrderItem.of(Math.toIntExact(cart.get(itemId)), price, orderId, itemId);
+            int price = (int) (itemPrice * cartSession.getCart().get(itemId));
+            OrderItem orderItem = OrderItem.of(Math.toIntExact(cartSession.getCart().get(itemId)), price, orderId, itemId);
             orderItemRepository.save(orderItem);
         }
 
+
         order.setTotalPrice(orderItemRepository.findPriceByOrderId(orderId));
+
         System.out.println("주문이 완료되었습니다.");
     }
 
@@ -164,9 +169,9 @@ public class OrderService {
                                    메뉴 선택 화면
                         ================================
                         1. 장바구니에 담긴 상품 주문하기
-                        2. 본인 주문내역 조회
-                        3. 주문하기
-                        0. 뒤로 가기
+                        2. 본인 주문 조회
+                        3. 주문 취소           
+                        0. 뒤로 가기           
                         ================================
                         """);
             }

@@ -138,13 +138,19 @@ public class OrderItemRepository {
     }
 
     public void deleteByOrderId(Long id) {
-        String sql = "DELETE FROM order_item WHERE order_id = ?";
+
+        String sql = "DELETE FROM order_item WHRER order_id = ?";
+
+
         Connection conn = null;
         PreparedStatement pstmt = null;
 
         try {
             conn = getConnection();
             pstmt = conn.prepareStatement(sql);
+
+            pstmt.setLong(1, id);
+
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new CustomDbException(e);

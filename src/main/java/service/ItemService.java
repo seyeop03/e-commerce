@@ -8,8 +8,13 @@ import domain.Review;
 import repository.*;
 
 import java.util.List;
+
+import java.util.Map;
+
 import java.util.Scanner;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static common.UserInput.*;
 
@@ -34,29 +39,63 @@ public class ItemService {
 
     //== 상품 서비스 핸들러 ==//
     public void handleItemService(Scanner sc) {
-        displayItemMenu();
-        int choice = inputInt("선택: ", sc);
+        while (true) {
+            displayItemMenu();
+            int choice = inputInt("선택: ", sc);
+            CartSession cartSession = CartSession.getInstance();
 
-        switch (choice) {
-            case 1: //카테고리별 조회 서비스 호출
-                CategoryType.printHighCategories(); //대분류 카테고리 출력
-                int highCategoryNum = inputInt("대분류 카테고리 번호 선택: ", sc);
-                CategoryType categoryName = CategoryType.fromIndex(highCategoryNum); //인덱스로 대분류 카테고리 열거형 객체 뽑아내기
-                CategoryType.printMiddleCategory(categoryName); //선택한 대분류에 대한 중분류 카테고리들을 출력
+            switch (choice) {
+                case 1: //카테고리별 조회 서비스 호출
+                    CategoryType.printHighCategories(); //대분류 카테고리 출력
+                    int highCategoryNum = inputInt("대분류 카테고리 번호 선택: ", sc);
+                    CategoryType categoryName = CategoryType.fromIndex(highCategoryNum); //인덱스로 대분류 카테고리 열거형 객체 뽑아내기
+                    CategoryType.printMiddleCategory(categoryName); //선택한 대분류에 대한 중분류 카테고리들을 출력
 
-                //todo: 상품 출력
+                    //todo: 상품 출력
 
-                //장바구니 (장바구니 서비스) => cartService(itemId)
-                //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
-                break;
-            case 2: //상품 키워드 검색 서비스 호출
-                itemSearchService(sc);
-                itemSearchService(sc);
-                cartService(sc);
-                //장바구니 (장바구니 서비스) => cartService(itemId)
-                //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
-                break;
+                    //장바구니 (장바구니 서비스) => cartService(itemId)
+                    //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
+                    break;
+                case 2: //상품 키워드 검색 서비스 호출
+                    itemSearchService(sc);
+                    serviceChoice();
+                    int serviceChoice = inputInt("선택", sc);
+                    if (serviceChoice == 1) {
+                        cartService(cartSession, sc);
+                    }
+                    //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
+                    break;
+                case 3:
+                    Set<Long> keyset = cartSession.getCart().keySet();
+                    for (Long key : keyset) {
+                        System.out.println(key + ":" + cartSession.getCart().get(key));
+                    }
+                    break;
+                case 0:
+                    return;
+
+
+            }
         }
+    }
+
+    private static void serviceChoice() {
+        System.out.println("1. 장바구니에 상품 담기");
+        System.out.println("2. 상품 리뷰 보기");
+    }
+
+    private void cartService(CartSession cartSession, Scanner sc) {
+        Long itemId = inputLong("장바구니에 담을 아이템 번호를 입력해주세요.",sc);
+        cartSession.addItem(itemId);
+
+
+    }
+
+    private void itemSearchService(Scanner sc) {
+        String keyword = inputString("검색할 키워드를 입력해주세요.", sc);
+        itemRepository.findByKeyword(keyword).forEach(System.out::println);
+
+           
     }
 
     private void cartService(Scanner sc) {
@@ -69,6 +108,7 @@ public class ItemService {
         String keyword = inputString("검색할 키워드를 입력해주세요: ", sc);
         List<Item> items = itemRepository.findByKeyword(keyword);
         System.out.println(items);
+
     }
 
     private static boolean isAdmin(Member currentMember) {

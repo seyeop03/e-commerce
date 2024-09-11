@@ -16,22 +16,30 @@ import static repository.connection.DBConnectionUtil.getConnection;
 public class OrderRepository {
 
     public Long save(Order order) {
-        String sql = "INSERT INTO orders(status, member_id) VALUES (?,?)";
+        String sql = "INSERT INTO orders( date, status, member_id) VALUES (?,?,?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
+        ResultSet rs = null;
+//        Long orderId = 0L;
 
         try {
             conn = getConnection();
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1,order.getStatus().name());
-            pstmt.setLong(2,order.getMemberId());
+            pstmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1,order.getDate());
+            pstmt.setString(2,order.getStatus().name());
+            pstmt.setLong(3,order.getMemberId());
+            pstmt.executeUpdate();
+            rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                order.setOrderId(rs.getLong(1));
+            }
+            return order.getOrderId();
 
         } catch (SQLException e) {
             throw new CustomDbException(e);
         } finally {
-            close(conn, pstmt, null);
+            close(conn, pstmt, rs);
         }
-        return order.getOrderId();
     }
 
     public Long getOrderPk(Order order) {
@@ -69,7 +77,7 @@ public class OrderRepository {
                 Order order = new Order(
                         rs.getLong("order_id"),
                         rs.getString("date"),
-                        rs.getInt("total_price"),
+//                        rs.getInt("total_price"),
                         OrderStatus.valueOf(rs.getString("status")),
                         rs.getLong("member_id")
                 );
@@ -99,7 +107,7 @@ public class OrderRepository {
             if (rs.next()) {
                 order = Order.of(
                         rs.getString("date"),
-                        rs.getInt("total_price"),
+//                        rs.getInt("total_price"),
                         OrderStatus.valueOf(rs.getString("status")),
                         rs.getLong("member_id")
                 );
@@ -128,7 +136,7 @@ public class OrderRepository {
             while (rs.next()){
                 Order order = Order.of(
                         rs.getString("date"),
-                        rs.getInt("total_price"),
+//                        rs.getInt("total_price"),
                         OrderStatus.valueOf(rs.getString("status")),
                         rs.getLong("member_id")
                 );
