@@ -1,34 +1,28 @@
 package service;
 
 import common.*;
-import domain.Item;
-import domain.Member;
-import domain.Order;
-import domain.OrderItem;
+import domain.*;
 import repository.*;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static common.UserInput.*;
 
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final MemberRepository memberRepository;
-    private final CartRepository cartRepository;
-    private final CartItemRepository cartItemRepository;
     private final ItemRepository itemRepository;
     private final OrderItemRepository orderItemRepository;
+    private final ReviewRepository reviewRepository;
 
-    public OrderService(OrderRepository orderRepository, MemberRepository memberRepository, CartRepository cartRepository, CartItemRepository cartItemRepository, ItemRepository itemRepository, OrderItemRepository orderItemRepository) {
+    public OrderService(OrderRepository orderRepository, ItemRepository itemRepository, OrderItemRepository orderItemRepository, ReviewRepository reviewRepository) {
         this.orderRepository = orderRepository;
-        this.memberRepository = memberRepository;
-        this.cartRepository = cartRepository;
-        this.cartItemRepository = cartItemRepository;
         this.itemRepository = itemRepository;
         this.orderItemRepository = orderItemRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     //== 주문 서비스 핸들러 ==//
@@ -45,6 +39,7 @@ public class OrderService {
                     }else {
                         createOrder(cartSession, currentMember);
                     }
+                    break;
 
                 case 2:
                     if (isAdmin(currentMember)){
@@ -52,11 +47,15 @@ public class OrderService {
                     }else {
                         findOrders(sc);
                     }
+                    break;
 
                 case 3:
                     if (!isAdmin(currentMember)){
                         deleteOrder(sc, currentMember);
                     }
+                    break;
+                case 0:
+                    return;
             }
         }
     }
@@ -92,7 +91,6 @@ public class OrderService {
         Order order = Order.of(date, OrderStatus.PAYMENT_WAITING, memberId);
         Long orderId = orderRepository.save(order);
         System.out.println(orderId);
-        System.out.println("ok");
 
         for (Long itemId : cartSession.getCart().keySet()) {
             int itemPrice = itemRepository.findItemPriceById(itemId);
@@ -101,8 +99,9 @@ public class OrderService {
             orderItemRepository.save(orderItem);
         }
 
-
         order.setTotalPrice(orderItemRepository.findPriceByOrderId(orderId));
+        int totalPrice = order.getTotalPrice();
+        orderRepository.updateTotalPriceById(totalPrice,orderId);
 
         System.out.println("주문이 완료되었습니다.");
     }
@@ -117,9 +116,13 @@ public class OrderService {
                 .getCurrentMember()
                 .getMemberId();
         List<Order> orderList = orderRepository.findByMemberId(memberId);
-        System.out.println(orderList);
+        if (orderList == null) {
+            System.out.println("주문 내역이 없습니다.");
+        } else {
+            System.out.println(orderList);
+        }
 
-        Long id = inputLong("상세 조회할 주문 번호", sc);
+        Long id = inputLong("상세 조회할 주문 번호 : ", sc);
         List<OrderItem> orderItems = orderItemRepository.findByOrderId(id);
 
         if (orderItems.isEmpty()){
@@ -130,6 +133,17 @@ public class OrderService {
                     .collect(Collectors.toList());
             System.out.println(orderItems);
             System.out.println(itemNames);
+
+            Long itemId = inputLong("리뷰 작성할 상품 번호 선택 : ",sc);
+
+            for (int i = 0; i < orderItems.size(); i++) {
+                if (itemId.equals(orderItems.get(i).getItemId())) {
+                    int stars = inputInt("평점을 입력해주세요: ", sc);
+                    String contents = inputString("내용을 입력해주세요: ", sc);
+                    Review review = Review.of(stars,contents,memberId,itemId);
+                    reviewRepository.save(review);
+                }
+            } // 생각나는대로 작성해서 조금 더 생각해보겠슴다
         }
     }
 

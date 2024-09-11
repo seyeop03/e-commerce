@@ -1,10 +1,6 @@
 package common;
 
-import domain.CartItem;
-import domain.Item;
-
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 //장바구니 구현: 상품_ID 선택 -> 카트 담기
