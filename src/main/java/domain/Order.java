@@ -22,6 +22,6 @@ public class Order {
     }
 
     public static Order of(String date, OrderStatus status, Long memberId) {
-        return new Order(null,date,0, status, memberId);
+        return new Order(null, date,0, status, memberId);
     }
 }

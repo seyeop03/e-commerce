@@ -98,7 +98,7 @@ public class OrderService {
             orderItemRepository.save(orderItem);
         }
 
-        order.setTotalPrice(orderItemRepository.getTotalPriceByOrderId(orderId));
+        order.setTotalPrice(orderItemRepository.findPriceByOrderId(orderId));
         System.out.println("주문이 완료되었습니다.");
     }
 
@@ -155,7 +155,7 @@ public class OrderService {
                         ================================
                         1. 전체 주문 조회
                         2. 주문 상태 변경
-                        0. 뒤로 가기           
+                        0. 뒤로 가기
                         ================================
                         """);
             } else {
@@ -164,9 +164,9 @@ public class OrderService {
                                    메뉴 선택 화면
                         ================================
                         1. 장바구니에 담긴 상품 주문하기
-                        2. 본인 주문 조회
-                        3. 주문            
-                        0. 뒤로 가기           
+                        2. 본인 주문내역 조회
+                        3. 주문하기
+                        0. 뒤로 가기
                         ================================
                         """);
             }
