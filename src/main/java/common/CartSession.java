@@ -16,7 +16,7 @@ import java.util.Map;
 public class CartSession {
 
     private static CartSession instance;
-    private Map<Long, Long> cart = new HashMap<>(); //<itemId, 수량>
+    private static Map<Long, Long> cart = new HashMap<>(); //<itemId, 수량>
     //
 
     public void addItem(Long itemId) {
