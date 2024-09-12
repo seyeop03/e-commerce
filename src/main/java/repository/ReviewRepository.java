@@ -97,6 +97,38 @@ public class ReviewRepository {
         }
     }
 
+    public List<Review> findByItemId(Long id) {
+        String sql = "SELECT * FROM review WHERE item_id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, id);
+            rs = pstmt.executeQuery();
+
+            List<Review> list = new ArrayList<>();
+            while(rs.next()){
+                Review review = new Review(
+                        rs.getLong("review_id"),
+                        rs.getInt("star"),
+                        rs.getString("contents"),
+                        rs.getString("date"),
+                        rs.getLong("member_id"),
+                        rs.getLong("item_id")
+                );
+                list.add(review);
+            }
+            return list;
+        } catch (SQLException e){
+            throw new CustomDbException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
+    }
+
 
     // 리뷰작성
     public void save(Review review) {

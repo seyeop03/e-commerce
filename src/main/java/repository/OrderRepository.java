@@ -135,9 +135,10 @@ public class OrderRepository {
 
             List<Order> orderList = new ArrayList<>();
             while (rs.next()){
-                Order order = Order.of(
+                Order order = new Order(
+                        rs.getLong("order_id"),
                         rs.getString("date"),
-//                        rs.getInt("total_price"),
+                        rs.getInt("total_price"),
                         OrderStatus.valueOf(rs.getString("status")),
                         rs.getLong("member_id")
                 );
