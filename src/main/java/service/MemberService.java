@@ -91,7 +91,7 @@ public class MemberService {
                     break;
                 case 8:
                     Member currentMember = session.getCurrentMember();
-                    if (currentMember != null && currentMember.getRole().equals(Role.ADMIN)) {
+                    if (currentMember != null && currentMember.getRole().equals(Role.USER)) {
                         showAllMembers(); //회원 전체 조회
                     } else {
                         System.out.println("잘못된 입력입니다.");
@@ -133,7 +133,7 @@ public class MemberService {
         String address = inputString("주소: ", sc);
         String home = inputString("집 전화: ", sc);
 
-        Member member = Member.of(username, password, name, birth, phone, email, address, home, Role.USER);
+        Member member = Member.of(username, password, name, birth, phone, email, address, home, Role.ADMIN);
 
         //ID 중복 확인
         if (!isUsernameDuplicated(username)) {

@@ -59,17 +59,21 @@ public class ItemService {
                             .forEach(System.out::println);
 
                     serviceChoice(); //장바구니, 상품 리뷰 조회 중 택 1
-                    int serviceChoice1 = inputInt("선택", sc);
+                    int serviceChoice1 = inputInt("선택 : ", sc);
                     if (serviceChoice1 == 1) {
                         cartService(cartSession, sc);
+                    } else if (serviceChoice1 == 2) {
+                        reviewService(sc);
                     }
                     break;
                 case 2: //상품 키워드 검색 서비스 호출
                     itemSearchService(sc); //상품 검색
                     serviceChoice(); //장바구니, 상품 리뷰 조회 중 택 1
-                    int serviceChoice2 = inputInt("선택", sc);
+                    int serviceChoice2 = inputInt("선택 : ", sc);
                     if (serviceChoice2 == 1) {
                         cartService(cartSession, sc);
+                    } else if (serviceChoice2 == 2) {
+                        reviewService(sc);
                     }
                     //리뷰 (1. 리뷰 서비스) => reviewService(itemId)
                     break;
@@ -81,9 +85,24 @@ public class ItemService {
         }
     }
 
+    private void reviewService(Scanner sc) {
+        Long itemId = inputLong("리뷰를 확인할 아이템 번호 입력 : ", sc);
+        List<Review> reviewList = reviewRepository.findByItemId(itemId);
+        for (Review review : reviewList) {
+            System.out.println(review);
+        }
+    }
+
     private void itemSearchService(Scanner sc) {
-        String keyword = inputString("검색할 키워드를 입력해주세요.", sc);
-        itemRepository.findByKeyword(keyword).forEach(System.out::println);
+        String keyword = inputString("검색할 키워드를 입력해주세요 : ", sc);
+        List<Item> itemList = itemRepository.findByKeyword(keyword);
+
+        if (itemList.isEmpty()) {
+            System.out.println("해당 키워드의 상품이 없습니다.");
+            itemSearchService(sc);
+        } else {
+            itemList.forEach(System.out::println);
+        }
     }
 
     private static void serviceChoice() {
@@ -241,6 +260,7 @@ public class ItemService {
                 ================================
                 1. 카테고리별 상품 조회
                 2. 상품 키워드 검색
+                0. 뒤로 가기
                 ================================
                 """);
     }
