@@ -65,8 +65,25 @@ public class ReviewRepository {
         }
     }
 
-    public List<Review> findByMemberId(Long id) {
-        String sql = "SELECT * FROM review WHERE member_id = ?";
+    public List<Review> findByMemberId(Long id, int sort) {
+        String sql = "SELECT * " +
+                "FROM review r " +
+                "WHERE r.member_id = ?" +
+                " order by ";
+        switch (sort) {
+            case 1:
+                sql += "r.date DESC"; // 최신순
+                break;
+            case 2:
+                sql += "r.star DESC"; // 별점 높은순
+                break;
+            case 3:
+                sql += "r.star ASC"; // 별점 낮은순
+                break;
+            default:
+                sql += "r.date DESC"; // 기본값 최신순
+                break;
+        }
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -191,6 +208,36 @@ public class ReviewRepository {
         }
     }
 
+    // 회원리뷰의 존재여부 확인
+    public boolean existByReviewAndMemberId(Long memberId){
+        String sql ="SELECT EXISTS(" +
+                "SELECT 1" +
+                " FROM review r" +
+                " WHERE r.member_id = ?)";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, memberId);
+            rs = pstmt.executeQuery();
+
+            rs.next();
+            if(rs.getBoolean(1)){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (SQLException e){
+            throw new CustomDbException(e);
+        }
+        finally {
+            close(conn, pstmt, rs);
+        }
+    }
 
 
 
