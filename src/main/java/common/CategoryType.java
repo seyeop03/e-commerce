@@ -16,8 +16,8 @@ public enum CategoryType {
     PHRASE("문구/완구", Arrays.asList("필기구", "노트/메모지", "유아")),
     BOOK("도서", Arrays.asList("소설", "경제/경영", "IT", "예술", "기술/공학", "유아"));
 
-    private final String highCategoryTypeName;
-    private final List<String> middleCategoryTypeNames;
+    private final String highCategoryTypeName; //대분류 카테고리 이름
+    private final List<String> middleCategoryTypeNames; //중분류 카테고리 이름
 
     CategoryType(String highCategoryType, List<String> middleCategoryTypes) {
         this.highCategoryTypeName = highCategoryType;

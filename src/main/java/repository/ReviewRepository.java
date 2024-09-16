@@ -14,23 +14,23 @@ import static repository.connection.DBConnectionUtil.*;
 public class ReviewRepository {
 
     // (제품별)리뷰보기 -> 정렬기준(최신순/별점 높은순/별점 낮은순)
-    public void findByAll(Long itemId, int sort) {
+    public List<Review> findAllByItemIdAndSort(Long itemId, int sort) {
         String sql = "SELECT *" +
-                " FROM review r" +
-                " WHERE r.item_id = ?" +
-                " order by ";
+                " FROM review" +
+                " WHERE item_id = ?" +
+                " ORDER BY ";
         switch (sort) {
             case 1:
-                sql += "r.date DESC"; // 최신순
+                sql += "date DESC"; // 최신순
                 break;
             case 2:
-                sql += "r.star DESC"; // 별점 높은순
+                sql += "stars DESC"; // 별점 높은순
                 break;
             case 3:
-                sql += "r.star ASC"; // 별점 낮은순
+                sql += "stars ASC"; // 별점 낮은순
                 break;
             default:
-                sql += "r.date DESC"; // 기본값 최신순
+                sql += "date DESC"; // 기본값 최신순
                 break;
         }
 
@@ -48,7 +48,7 @@ public class ReviewRepository {
             while(rs.next()){
                 Review review = new Review(
                         rs.getLong("review_id"),
-                        rs.getInt("star"),
+                        rs.getInt("stars"),
                         rs.getString("contents"),
                         rs.getString("date"),
                         rs.getLong("member_id"),
@@ -56,17 +56,33 @@ public class ReviewRepository {
                 );
                 itemReviewList.add(review);
             }
-        }
-        catch (SQLException e){
+            return itemReviewList;
+        } catch (SQLException e){
             throw new CustomDbException(e);
-        }
-        finally {
+        } finally {
             close(conn, pstmt, rs);
         }
     }
 
-    public List<Review> findByMemberId(Long id) {
-        String sql = "SELECT * FROM review WHERE member_id = ?";
+    public List<Review> findByMemberId(Long id, int sort) {
+        String sql = "SELECT * " +
+                "FROM review " +
+                "WHERE member_id = ? " +
+                "ORDER BY ";
+        switch (sort) {
+            case 1:
+                sql += "date DESC"; // 최신순
+                break;
+            case 2:
+                sql += "stars DESC"; // 별점 높은순
+                break;
+            case 3:
+                sql += "stars ASC"; // 별점 낮은순
+                break;
+            default:
+                sql += "date DESC"; // 기본값 최신순
+                break;
+        }
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -77,19 +93,51 @@ public class ReviewRepository {
             pstmt.setLong(1, id);
             rs = pstmt.executeQuery();
 
-            List<Review> list = new ArrayList<>();
+            List<Review> itemReviewList = new ArrayList<>();
             while(rs.next()){
                 Review review = new Review(
                         rs.getLong("review_id"),
-                        rs.getInt("star"),
+                        rs.getInt("stars"),
                         rs.getString("contents"),
                         rs.getString("date"),
                         rs.getLong("member_id"),
                         rs.getLong("item_id")
                 );
-                list.add(review);
+                itemReviewList.add(review);
             }
-            return list;
+            return itemReviewList;
+        } catch (SQLException e){
+            throw new CustomDbException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
+    }
+
+    public List<Review> findByItemId(Long itemId) {
+        String sql = "SELECT * FROM review WHERE item_id = ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try{
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, itemId);
+            rs = pstmt.executeQuery();
+
+            List<Review> itemReviewList = new ArrayList<>();
+            while(rs.next()){
+                Review review = new Review(
+                        rs.getLong("review_id"),
+                        rs.getInt("stars"),
+                        rs.getString("contents"),
+                        rs.getString("date"),
+                        rs.getLong("member_id"),
+                        rs.getLong("item_id")
+                );
+                itemReviewList.add(review);
+            }
+            return itemReviewList;
         } catch (SQLException e){
             throw new CustomDbException(e);
         } finally {
@@ -108,7 +156,7 @@ public class ReviewRepository {
             conn = getConnection();
             LocalDateTime localDate = LocalDateTime.now();
             pstmt = conn.prepareStatement(sql);
-            pstmt.setInt(1, review.getStar());
+            pstmt.setInt(1, review.getStars());
             pstmt.setString(2, review.getContents());
             pstmt.setObject(3, localDate);
             pstmt.executeUpdate();
@@ -130,7 +178,7 @@ public class ReviewRepository {
             LocalDateTime localDateTime = LocalDateTime.now();
             pstmt = conn.prepareStatement(sql);
             pstmt.setLong(4, id);
-            pstmt.setInt(1, review.getStar());
+            pstmt.setInt(1, review.getStars());
             pstmt.setString(2, review.getContents());
             pstmt.setObject(3, localDateTime);
             pstmt.executeUpdate();
@@ -161,9 +209,9 @@ public class ReviewRepository {
 
     public boolean existsByIdAndMemberId(Long reviewId, Long memberId){
         String sql = "SELECT EXISTS(" +
-                "SELECT 1" +
-                "FROM review r" +
-                "where r.review_id = ? AND r.member_id = ?)";
+                "SELECT 1 " +
+                "FROM review " +
+                "WHERE review_id = ? AND member_id = ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -176,12 +224,7 @@ public class ReviewRepository {
             rs = pstmt.executeQuery();
 
             rs.next();
-            if(rs.getBoolean(1)){
-                return true;
-            }
-            else {
-                return false;
-            }
+            return rs.getBoolean(1);
         }
         catch (SQLException e){
             throw new CustomDbException(e);
@@ -191,7 +234,31 @@ public class ReviewRepository {
         }
     }
 
+    // 회원리뷰의 존재여부 확인
+    public boolean existByReviewAndMemberId(Long memberId){
+        String sql ="SELECT EXISTS(" +
+                "SELECT 1 " +
+                "FROM review " +
+                "WHERE member_id = ?)";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
 
+        try{
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setLong(1, memberId);
+            rs = pstmt.executeQuery();
 
+            rs.next();
+            return rs.getBoolean(1);
+        }
+        catch (SQLException e){
+            throw new CustomDbException(e);
+        }
+        finally {
+            close(conn, pstmt, rs);
+        }
+    }
 
 }

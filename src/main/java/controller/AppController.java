@@ -36,10 +36,6 @@ public class AppController {
         System.out.println("1. 회원 서비스");
         System.out.println("2. 주문 서비스");
         System.out.println("3. 상품 서비스");
-//        Member currentMember = Session.getInstance().getCurrentMember();
-//        if (currentMember != null && currentMember.getRole().equals(Role.ADMIN)) {
-//            System.out.println("4. 상품 관리자 서비스");
-//        }
         System.out.println("0. 종료");
     }
 
@@ -49,18 +45,15 @@ public class AppController {
                 memberService.handleMemberService(sc); //회원 서비스
                 break;
             case 2 :
-                orderService.handleOrderService(sc); //주문 서비스
+                if (Session.getInstance().getCurrentMember() != null) {
+                    orderService.handleOrderService(sc); //주문 서비스
+                } else {
+                    System.out.println("로그인 이후 주문 서비스를 이용할 수 있습니다.");
+                }
                 break;
             case 3 :
                 itemService.handleItemService(sc); //상품 서비스
                 break;
-//            case 4 :
-//                Member currentMember = Session.getInstance().getCurrentMember();
-//                if (currentMember != null && currentMember.getRole().equals(Role.ADMIN)) {
-//                    itemAdminService.handleItemAdminService(sc);
-//                } else {
-//                    System.out.println("잘못된 입력입니다.");
-//                }
             case 0 :
                 System.out.println("프로그램을 종료합니다.");
                 System.exit(0);

@@ -5,27 +5,22 @@
 //
 //public class SessionManager {
 //
-//    private static SessionManager instance; //세션 매니저는 싱글톤 인스턴스
+//    //ThreadLocal 로 각 스레드별 Session 인스턴스를 저장
+//    private static final ThreadLocal<Session> threadLocalSession = new ThreadLocal<>();
 //
-//    //UUID, <LOGIN_MEMBER, Member> / UUID, <MEMBER_CART, CART> => UUID, <SESSION_CONST, 객체>
-//    private static Map<String, Map<String, Object>> sessionStore = new ConcurrentHashMap<>();
-//
-//    public SessionManager getInstance() {
-//        if (instance == null) {
-//            return new SessionManager();
+//    //현재 스레드에 대한 세션 반환
+//    public static Session getSession() {
+//        Session session = threadLocalSession.get();
+//        if (session == null) {
+//            session = new Session();
+//            threadLocalSession.set(session);
 //        }
-//        return instance;
+//        return session;
 //    }
 //
-//    public void createSession() {
-//
+//    //현재 스레드의 세션 삭제
+//    public static void removeSession() {
+//        threadLocalSession.remove();
 //    }
 //
-//    public Map<> getSession(String sessionId) {
-//        sessionStore.get(sessionId);
-//    }
-//
-//    public void removeSession(String sessionId) {
-//
-//    }
 //}

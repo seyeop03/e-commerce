@@ -2,13 +2,15 @@ package domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
+@ToString
 public class Review {
 
     private Long reviewId; //PK
-    private int star; //별점
+    private int stars; //별점
     private String contents; //리뷰 내용
     private String date; //날짜
     private Long memberId; //FK

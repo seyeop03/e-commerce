@@ -69,7 +69,7 @@ public class ItemRepository {
         }
     }
 
-    public Optional<Item> findByItemId(Long id) {
+    public Optional<Item> findById(Long id) {
         String sql = "SELECT * FROM item WHERE item_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -180,7 +180,65 @@ public class ItemRepository {
         } finally {
             close(conn, pstmt, rs);
         }
+    }
 
+    public List<Item> findByKeywordWithPagination(String keyword, int pageNumber, int pageSize) {
+
+        String sql = "SELECT * FROM item WHERE name LIKE ? LIMIT ? OFFSET ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "%" + keyword + "%");
+            pstmt.setInt(2, pageSize);
+            pstmt.setInt(3, (pageNumber - 1) * pageSize);
+
+            rs = pstmt.executeQuery();
+
+            List<Item> items = new ArrayList<>();
+            while (rs.next()) {
+                Item item = new Item(
+                        rs.getLong("item_id"),
+                        rs.getString("name"),
+                        rs.getInt("price"),
+                        rs.getString("manufacture_date"),
+                        rs.getString("origin"),
+                        rs.getString("company"),
+                        rs.getString("size"),
+                        rs.getString("color")
+                );
+                items.add(item);
+            }
+            return items;
+        } catch (SQLException e) {
+            throw new CustomDbException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
+    }
+
+    public int totalCount(String keyword) {
+        String sql = "SELECT COUNT(*) FROM item WHERE name LIKE ?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = getConnection();
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "%" + keyword + "%");
+            rs = pstmt.executeQuery();
+            rs.next();
+
+            return rs.getInt(1);
+        } catch (SQLException e) {
+            throw new CustomDbException(e);
+        } finally {
+            close(conn, pstmt, rs);
+        }
     }
 
     public int findItemPriceById(Long id) {
