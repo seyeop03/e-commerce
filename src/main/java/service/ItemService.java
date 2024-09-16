@@ -51,6 +51,7 @@ public class ItemService {
                 continue;
             }
 
+
             /**
              * 카테고리별 조회 서비스, 상품 키워드 검색 이후 공통 로직
              */
@@ -146,7 +147,7 @@ public class ItemService {
         return true;
     }
 
-    private boolean getUserInputForNextPage(Scanner sc) {
+    private static boolean getUserInputForNextPage(Scanner sc) {
         boolean flag = false;
         String userInput;
         while (true) { //입력값 제한 (Y/N)을 위한 loop
@@ -204,6 +205,7 @@ public class ItemService {
                 sort = 1;
                 break;
         }
+
         itemRepository.findById(itemId)
                 .ifPresentOrElse(
                         i -> reviewRepository.findAllByItemIdAndSort(itemId, sort)

@@ -58,6 +58,12 @@ public class OrderService {
         }
     }
 
+    private static boolean checkOrderStatus(Order order) {
+        return order.getStatus().equals(OrderStatus.valueOf("PAYMENT_WAITING"))
+                || order.getStatus().equals(OrderStatus.valueOf("PAYMENT_COMPLETED"))
+                || order.getStatus().equals(OrderStatus.valueOf("PREPARING"));
+    }
+
     private void createOrder(CartSession cartSession, Member currentMember) {
 
         Long memberId = currentMember.getMemberId();
@@ -104,21 +110,12 @@ public class OrderService {
         if (orderItems.isEmpty()){
             System.out.println("주문 번호를 확인해주세요.");
         }else {
-//            List<String> itemNames = orderItems.stream()
-//                    .map(o -> extractItemName(o.getItemId()))
-//                    .collect(Collectors.toList());
-//            for (OrderItem orderItem : orderItems) {
-//                System.out.println(orderItem);
-//            }
-//            System.out.println(itemNames);
-
             orderItems.stream()
                     .forEach(o -> {
                         System.out.println("상품명: " + extractItemName(o.getItemId())
                                 + " | 수량: " + o.getQuantity()
                                 + " | 금액: " + o.getPrice());
                     });
-
 //            Long itemId = inputLong("리뷰 작성할 상품 번호 선택 : ",sc);
 //
 //            for (int i = 0; i < orderItems.size(); i++) {
@@ -156,12 +153,6 @@ public class OrderService {
         }
     }
 
-    private static boolean checkOrderStatus(Order order) {
-        return order.getStatus().equals(OrderStatus.valueOf("PAYMENT_WAITING"))
-                || order.getStatus().equals(OrderStatus.valueOf("PAYMENT_COMPLETED"))
-                || order.getStatus().equals(OrderStatus.valueOf("PREPARING"));
-    }
-
     private static boolean isAdmin(Member currentMember) {
         return currentMember.getRole().equals(Role.ADMIN);
     }
@@ -180,6 +171,7 @@ public class OrderService {
         }
 
         orderRepository.updateById(id, orderStatus);
+
         System.out.println("주문 번호 " + id + "의 상태가 " + orderStatus + "로 변경되었습니다.");
     }
 

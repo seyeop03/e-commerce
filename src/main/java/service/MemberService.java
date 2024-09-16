@@ -140,7 +140,7 @@ public class MemberService {
         String address = inputString("주소: ", sc);
         String home = inputString("집 전화: ", sc);
 
-        Member member = Member.of(username, password, name, birth, phone, email, address, home, Role.USER);
+        Member member = Member.of(username, password, name, birth, phone, email, address, home, Role.ADMIN);
 
         //ID 중복 확인
         if (!isUsernameDuplicated(username)) {
@@ -277,15 +277,15 @@ public class MemberService {
         int sort;
         switch (sortOption) {
             case 1:
-                System.out.println("정렬 : 최신순"+"/n");
+                System.out.println("정렬 : 최신순" + '\n');
                 sort = 1;
                 break;
             case 2:
-                System.out.println("정렬 : 별점 높은순"+"/n");
+                System.out.println("정렬 : 별점 높은순" + '\n');
                 sort = 2;
                 break;
             case 3:
-                System.out.println("정렬 : 별점 낮은순"+"/n");
+                System.out.println("정렬 : 별점 낮은순" + '\n');
                 sort = 3;
                 break;
             default:

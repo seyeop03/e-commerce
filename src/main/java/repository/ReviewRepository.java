@@ -83,6 +83,7 @@ public class ReviewRepository {
                 sql += "date DESC"; // 기본값 최신순
                 break;
         }
+
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
