@@ -129,16 +129,6 @@ public class OrderService {
                             + " | 금액: " + oi.getPrice());
                 });
 
-        orderItemRepository.findByOrderId(id)
-                .stream()
-                .filter(oi -> oi.getItemId().equals(id))
-                .map(oi -> "상품 ID: " + oi.getItemId()
-                        + " | 상품명: " + extractItemName(oi.getItemId())
-                        + " | 수량: " + oi.getQuantity()
-                        + " | 금액: " + oi.getPrice())
-                .findAny()
-                .ifPresent(System.out::println);
-
         /**
          * 특정 주문의 상품에 대한 리뷰 작성
          */
@@ -148,7 +138,10 @@ public class OrderService {
                 .filter(oi -> itemId.equals(oi.getItemId()))
                 .map(oi -> createReview(memberId, itemId, sc))
                 .findAny()
-                .ifPresent(reviewRepository::save);
+                .ifPresentOrElse(
+                        r -> reviewRepository.save(r),
+                        () -> System.out.println("상품 ID 를 확인해주세요!")
+                );
 
 //        for (int i = 0; i < orderItems.size(); i++) {
 //            if (itemId.equals(orderItems.get(i).getItemId())) {
