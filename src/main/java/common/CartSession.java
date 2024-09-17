@@ -27,4 +27,7 @@ public class CartSession {
         return cart;
     }
 
+    public void clearCart() {
+        cart.clear();
+    }
 }

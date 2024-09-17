@@ -1,5 +1,6 @@
 package service;
 
+import common.CartSession;
 import common.Role;
 import common.Session;
 import common.UserInput;
@@ -185,6 +186,7 @@ public class MemberService {
     //== 회원 로그아웃 ==//
     public void signOut() {
         Session.getInstance().removeCurrentMember();
+        CartSession.getInstance().clearCart();
         System.out.println("로그아웃 되었습니다.");
     }
 
@@ -232,7 +234,8 @@ public class MemberService {
 
         //입력 문자열이 일치하면 로그아웃 이후 탈퇴 진행
         if (input.equals(currentMember.getUsername())) {
-            Session.getInstance().setCurrentMember(null); //로그아웃
+            Session.getInstance().removeCurrentMember(); //로그아웃
+            CartSession.getInstance().clearCart();
             memberRepository.deleteById(memberId);
             System.out.println("탈퇴되었습니다!");
         } else {
