@@ -4,6 +4,7 @@ import domain.Review;
 import exception.CustomDbException;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -149,17 +150,19 @@ public class ReviewRepository {
 
     // 리뷰작성
     public void save(Review review) {
-        String sql = "INSERT INTO review(stars, contents, date) VALUES(?, ?, ?)";
+        String sql = "INSERT INTO review(stars, contents, date, member_id, item_id) VALUES(?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
 
         try{
             conn = getConnection();
-            LocalDateTime localDate = LocalDateTime.now();
+            String date = LocalDate.now().toString();
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, review.getStars());
             pstmt.setString(2, review.getContents());
-            pstmt.setObject(3, localDate);
+            pstmt.setString(3, date);
+            pstmt.setLong(4, review.getMemberId());
+            pstmt.setLong(5, review.getItemId());
             pstmt.executeUpdate();
         } catch (SQLException e){
             throw new CustomDbException(e);

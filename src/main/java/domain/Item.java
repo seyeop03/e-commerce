@@ -8,6 +8,7 @@ import lombok.ToString;
 @Getter
 @ToString
 public class Item {
+
     private Long itemId;
     private String name;
     private int price;
@@ -17,6 +18,7 @@ public class Item {
     private String size;
     private String color;
 
+    //== 정적 팩토리 메서드 ==//
     public static Item of(String name, int price, String manufactureDate, String origin, String company, String size, String color) {
         return new Item(null,name,price,manufactureDate,origin,company,size,color);
     }

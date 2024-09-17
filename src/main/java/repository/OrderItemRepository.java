@@ -34,24 +34,6 @@ public class OrderItemRepository {
 
     }
 
-    public List<OrderItem> findAll() {
-        String sql = "";
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        return null;
-    }
-
-    public List<OrderItem> findByUsername() {
-        String sql = "";
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        return null;
-    }
-
     public List<OrderItem> findByOrderId(Long id) {
         String sql = "SELECT * FROM order_item WHERE order_id = ?";
         Connection conn = null;

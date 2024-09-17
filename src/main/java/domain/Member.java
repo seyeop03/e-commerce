@@ -9,6 +9,7 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 public class Member {
+
     private Long memberId;
     private String username;
     private String password;
@@ -31,7 +32,8 @@ public class Member {
 
     @Override
     public String toString() {
-        return "아이디:" + username + '\n' +
+        return "======================" +
+                "아이디:" + username + '\n' +
                 "이름:" + name + '\n' +
                 "생년월일:" + birth + '\n' +
                 "휴대폰번호:" + phone + '\n' +

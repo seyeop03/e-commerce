@@ -87,6 +87,7 @@ public class ItemService {
                 """);
     }
 
+    //== 카테고리별 상품 조회 ==//
     private void viewCategoryService(Scanner sc) {
         CategoryType.printHighCategories(); //대분류 카테고리 출력
         int highCategoryNum = inputInt("대분류 카테고리 번호 선택: ", sc);
@@ -101,6 +102,7 @@ public class ItemService {
                 .forEach(item -> viewItemInfo(item));
     }
 
+    //== 상품 정보 조회 ==//
     private void viewItemInfo(Item item) {
         System.out.println("상품 ID: " + item.getItemId()
                 + " | 상품명: " + item.getName()
@@ -110,6 +112,7 @@ public class ItemService {
                 + " | 제조회사: " + item.getCompany());
     }
 
+    //== 페이지네이션 적용한 상품 키워드 검색 서비스 ==//
     private boolean itemSearchServiceWithPagination(Scanner sc) {
         String keyword = inputString("검색할 키워드를 입력해주세요 : ", sc);
         int pageSize = 10;
@@ -126,7 +129,7 @@ public class ItemService {
 
             itemList.forEach(item -> viewItemInfo(item));
 
-            int startPage = (pageNumber-1)/10 * 10 + 1;
+            int startPage = (pageNumber-1)/10 * 10 + 1; //시작 페이지 번호
             for (int i = startPage; i < startPage + 10 && i <= totalPage; i++) {
                 if (i == pageNumber) {
                     System.out.print("\u001B[34m" + i + "\u001B[0m" + " | ");
@@ -140,7 +143,7 @@ public class ItemService {
                 System.out.println("마지막 페이지입니다.");
                 break;
             }
-            boolean flag = getUserInputForNextPage(sc);
+            boolean flag = getUserInputForNextPage(sc); //사용자로부터 다음 페이지 이동 여부 확인
 
             if (!flag) break;
         }
@@ -170,6 +173,7 @@ public class ItemService {
         System.out.println("=================================");
     }
 
+    //== 장바구니 서비스 ==//
     private void cartService(CartSession cartSession, Scanner sc) {
         Long itemId = inputLong("장바구니에 담을 상품 ID 를 입력해주세요: ",sc);
         Optional<Item> item = itemRepository.findById(itemId);
@@ -179,7 +183,7 @@ public class ItemService {
         );
     }
 
-    // (제품 아이디별)
+    //== 상품별 리뷰 조회 ==//
     private void reviewService(Scanner sc) {
         Long itemId = inputLong("리뷰를 보실 상품 ID 를 입력해 주세요 : ", sc);
         System.out.println("""
@@ -224,32 +228,6 @@ public class ItemService {
                 + " | 별점: " + "★".repeat(review.getStars())
                 + " | 작성 일자: " + review.getDate());
         System.out.println("내용: " + review.getContents() + '\n');
-    }
-
-    private void showReviews(Scanner sc) {
-        Long itemId = inputLong("리뷰를 확인할 아이템 번호 입력 : ", sc);
-        List<Review> reviewList = reviewRepository.findByItemId(itemId);
-        for (Review review : reviewList) {
-            System.out.println(review);
-        }
-    }
-
-    private static boolean isAdmin(Member currentMember) {
-        return currentMember.getRole().equals(Role.ADMIN);
-    }
-
-    private static Item getItem(Scanner sc) {
-        String name = inputString("상품 이름: ", sc);
-        int price = inputInt("상품 가격: ", sc);
-        String manufactureDate = inputString("상품 제조날짜: ", sc);
-        String origin = inputString("상품 원산지: ", sc);
-        String company = inputString("상품 제조사: ", sc);
-        String size = inputString("상품 사이즈: ", sc);
-        String color = inputString("상품 색상: ", sc);
-
-        Item item = Item.of(name, price, manufactureDate, origin, company, size, color);
-
-        return item;
     }
 
 }

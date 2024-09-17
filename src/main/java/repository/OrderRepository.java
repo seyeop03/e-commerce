@@ -122,7 +122,7 @@ public class OrderRepository {
     }
 
     public List<Order> findByMemberId(Long id) {
-        String sql = "SELECT * FROM orders WHERE member_id = ?";
+        String sql = "SELECT * FROM orders WHERE member_id = ? ORDER BY date DESC";
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;

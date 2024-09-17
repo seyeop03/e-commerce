@@ -5,6 +5,7 @@ import common.Session;
 import common.UserInput;
 import domain.Member;
 import domain.Review;
+import repository.ItemRepository;
 import repository.MemberRepository;
 import repository.ReviewRepository;
 
@@ -19,10 +20,12 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final ReviewRepository reviewRepository;
+    private final ItemRepository itemRepository;
 
-    public MemberService(MemberRepository memberRepository, ReviewRepository reviewRepository) {
+    public MemberService(MemberRepository memberRepository, ReviewRepository reviewRepository, ItemRepository itemRepository) {
         this.memberRepository = memberRepository;
         this.reviewRepository = reviewRepository;
+        this.itemRepository = itemRepository;
     }
 
     //== 회원 서비스 핸들러 ==//
@@ -92,7 +95,7 @@ public class MemberService {
                     break;
                 case 8:
                     Member currentMember = session.getCurrentMember();
-                    if (currentMember != null && currentMember.getRole().equals(Role.USER)) {
+                    if (currentMember != null && currentMember.getRole().equals(Role.ADMIN)) {
                         showAllMembers(); //회원 전체 조회
                     } else {
                         System.out.println("잘못된 입력입니다.");
@@ -118,7 +121,7 @@ public class MemberService {
                 4. 회원 정보 조회
                 5. 회원 정보 수정
                 6. 회원 탈퇴
-                7. 회원 리뷰 보기
+                7. 나의 리뷰 관리
                 """);
         Member currentMember = Session.getInstance().getCurrentMember();
         if (currentMember != null && currentMember.getRole().equals(Role.ADMIN))
@@ -140,12 +143,12 @@ public class MemberService {
         String address = inputString("주소: ", sc);
         String home = inputString("집 전화: ", sc);
 
-        Member member = Member.of(username, password, name, birth, phone, email, address, home, Role.ADMIN);
+        Member member = Member.of(username, password, name, birth, phone, email, address, home, Role.USER);
 
         //ID 중복 확인
         if (!isUsernameDuplicated(username)) {
             memberRepository.save(member);
-            System.out.println("가입 되었습니다!");
+            System.out.println("회원 가입 되었습니다!");
         }
     }
 
@@ -245,12 +248,12 @@ public class MemberService {
 
     //== 리뷰 서비스 ==//
     public void handleReviewService(Scanner sc){
-        int choice = sc.nextInt();
         displayReviewMenu();
+        int choice = inputInt("선택: ", sc);
 
         switch (choice){
-            case 1: //리뷰보기
-                selectReview(sc);
+            case 1: //리뷰조회
+                viewReview(sc);
                 break;
             case 2: //리뷰수정
                 updateReview(sc);
@@ -261,73 +264,7 @@ public class MemberService {
             case 4: //뒤로가기
                 return;
             default:
-                serviceBreak();
-        }
-    }
-    // (리뷰 보기)
-    private void selectReview(Scanner sc){
-        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
-        System.out.println("""
-                회원님 리뷰의 정렬기준을 선택해 주세요.
-                1. 최신순
-                2. 별점 높은순
-                3. 별점 낮은순
-                """);
-        int sortOption = sc.nextInt();
-        int sort;
-        switch (sortOption) {
-            case 1:
-                System.out.println("정렬 : 최신순" + '\n');
-                sort = 1;
-                break;
-            case 2:
-                System.out.println("정렬 : 별점 높은순" + '\n');
-                sort = 2;
-                break;
-            case 3:
-                System.out.println("정렬 : 별점 낮은순" + '\n');
-                sort = 3;
-                break;
-            default:
-                System.out.println("잘못된 입력입니다. 기본값으로 최신순으로 정렬됩니다.");
-                sort = 1;
-                break;
-        }
-        reviewRepository.findByMemberId(memberId, sort); // 회원 리뷰 보기
-    }
-
-    // (리뷰 수정하기 완료)
-    private void updateReview(Scanner sc) {
-        Long reviewId = inputLong("수정할 리뷰의 아이디를 입력해주세요 :", sc);
-        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
-        boolean isValidated = reviewRepository.existsByIdAndMemberId(reviewId, memberId);
-
-        //해당 리뷰 작성자가 본인이 맞을 경우
-        if (isValidated) {
-            int stars = inputInt("수정할 별점을 입력해 주세요 :", sc);
-            String contents = inputString("수정할 리뷰 내용을 입력해주세요 :", sc);
-
-            Review review = Review.of(stars, contents);
-            reviewRepository.updateById(reviewId, review);
-            System.out.println("리뷰가 수정 되었습니다.");
-        }
-        else {
-            System.out.println("수정할 리뷰가 없습니다.");
-        }
-    }
-
-    // (리뷰 삭제하기 완료)
-    private void deleteReview(Scanner sc) {
-        Long reviewId = inputLong("삭제할 리뷰의 아이디를 입력해 주세요 :", sc);
-        // 권한 확인
-        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
-        boolean isValidated = reviewRepository.existsByIdAndMemberId(reviewId, memberId);
-
-        if(isValidated){
-            reviewRepository.deleteById(reviewId);
-            System.out.println("리뷰가 삭제 되었습니다.");
-        }else{
-            System.out.println("삭제할 수 있는 리뷰가 없습니다.");
+                System.out.println("잘못된 입력입니다.");
         }
     }
 
@@ -336,16 +273,87 @@ public class MemberService {
                 ================================
                             리뷰 서비스
                 ================================
-                1. 회원 리뷰 보기
+                1. 나의 리뷰 조회
                 2. 리뷰 수정
                 3. 리뷰 삭제
                 0. 뒤로 가기
                 ================================
                 """);
     }
-    private static void serviceBreak() {
-        System.out.println("잘못된 번호 입니다.");
+
+    //== 리뷰 조회 ==//
+    private void viewReview(Scanner sc){
+        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
+        System.out.println("""
+                본인의 리뷰를 조회할 정렬 기준을 골라주세요.
+                1. 최신순
+                2. 별점 높은순
+                3. 별점 낮은순
+                """);
+        int sortOption = inputInt("정렬 기준 선택: ", sc);
+        int sort;
+        switch (sortOption) {
+            case 1:
+                System.out.println("최신순으로 조회합니다." + '\n');
+                sort = 1;
+                break;
+            case 2:
+                System.out.println("별점 높은순으로 조회합니다." + '\n');
+                sort = 2;
+                break;
+            case 3:
+                System.out.println("별점 낮은순으로 조회합니다." + '\n');
+                sort = 3;
+                break;
+            default:
+                System.out.println("잘못된 입력입니다. 기본값으로 최신순으로 정렬됩니다.");
+                sort = 1;
+                break;
+        }
+        reviewRepository.findByMemberId(memberId, sort)
+                .forEach(r -> {
+                    System.out.println(
+                            "------------------------------------------------------------------------------- \n"
+                                    + "리뷰 ID: " + r.getReviewId()
+                                    + " | 상품명: " + itemRepository.findById(r.getItemId()).map(item -> item.getName())
+                                    + " | 별점: " + "★".repeat(r.getStars())
+                                    + " | 작성 일자: " + r.getDate());
+                    System.out.println("내용: " + r.getContents() + '\n');
+                });
     }
 
+    //== 리뷰 수정 ==//
+    private void updateReview(Scanner sc) {
+        Long reviewId = inputLong("수정할 리뷰의 아이디를 입력해주세요: ", sc);
+        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
+        boolean isValidated = reviewRepository.existsByIdAndMemberId(reviewId, memberId);
+
+        //해당 리뷰 작성자가 본인이 맞을 경우
+        if (isValidated) {
+            int stars = inputInt("수정할 별점을 입력해 주세요: ", sc);
+            String contents = inputString("수정할 리뷰 내용을 입력해주세요: ", sc);
+
+            Review review = Review.of(stars, contents);
+            reviewRepository.updateById(reviewId, review);
+            System.out.println("리뷰가 수정 되었습니다.");
+        } else {
+            System.out.println("없는 리뷰이거나 본인의 리뷰가 아닙니다.");
+        }
+    }
+
+    //== 리뷰 삭제 ==//
+    private void deleteReview(Scanner sc) {
+        Long reviewId = inputLong("삭제할 리뷰의 아이디를 입력해 주세요 :", sc);
+        // 권한 확인
+        Long memberId = Session.getInstance().getCurrentMember().getMemberId();
+        boolean isValidated = reviewRepository.existsByIdAndMemberId(reviewId, memberId);
+
+        if(isValidated) {
+            reviewRepository.deleteById(reviewId);
+            System.out.println("리뷰가 삭제 되었습니다.");
+        } else {
+            System.out.println("삭제할 수 있는 리뷰가 없습니다.");
+        }
+    }
 
 }

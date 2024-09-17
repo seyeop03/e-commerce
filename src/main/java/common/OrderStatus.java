@@ -13,4 +13,13 @@ public enum OrderStatus {
     public int getStatusNum() {
         return statusNum;
     }
+
+    public static OrderStatus fromStatusNum(int statusNum) {
+        for (OrderStatus status : OrderStatus.values()) {
+            if (status.getStatusNum() == statusNum) {
+                return status;
+            }
+        }
+        return null;
+    }
 }

@@ -4,6 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class CategoryItem {
+
     private Long categoryItemId;
     private Long itemId; //FK
     private Long categoryId; //FK

@@ -8,6 +8,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class OrderItem {
+
     private Long orderItemId; //PK
     private int quantity; //1개의 상품 수량
     private int price; //상품 * 수량

@@ -37,38 +37,6 @@ public class ItemRepository {
         }
     }
 
-    public List<Item> findAll() {
-        String sql = "SELECT * FROM item";
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-
-        try {
-            conn = getConnection();
-            pstmt = conn.prepareStatement(sql);
-            rs = pstmt.executeQuery();
-
-            List<Item> itemList = new ArrayList<>();
-            while (rs.next()){
-                Item item = Item.of(
-                        rs.getString("name"),
-                        rs.getInt("price"),
-                        rs.getString("manufacture_date"),
-                        rs.getString("origin"),
-                        rs.getString("company"),
-                        rs.getString("size"),
-                        rs.getString("color")
-                );
-                itemList.add(item);
-            }
-            return itemList;
-        } catch (SQLException e) {
-            throw new CustomDbException(e);
-        } finally {
-            close(conn, pstmt, rs);
-        }
-    }
-
     public Optional<Item> findById(Long id) {
         String sql = "SELECT * FROM item WHERE item_id = ?";
         Connection conn = null;

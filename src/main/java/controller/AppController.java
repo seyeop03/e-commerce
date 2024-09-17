@@ -16,10 +16,9 @@ import static common.UserInput.*;
 public class AppController {
 
     AppConfig appConfig = AppConfig.getInstance();
-    MemberService memberService = appConfig.getMemberService();
-    OrderService orderService = appConfig.getOrderService();
-    ItemService itemService = appConfig.getItemService();
-//    ItemAdminService itemAdminService = appConfig.getItemAdminService();
+    MemberService memberService = appConfig.memberService();
+    OrderService orderService = appConfig.orderService();
+    ItemService itemService = appConfig.itemService();
 
     public void run() {
         Scanner sc = new Scanner(System.in);

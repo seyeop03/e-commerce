@@ -26,7 +26,7 @@ public class AppConfig {
         ReviewRepository reviewRepository = new ReviewRepository();
 
         // 서비스에 리포지토리 주입
-        memberService = new MemberService(memberRepository, reviewRepository);
+        memberService = new MemberService(memberRepository, reviewRepository, itemRepository);
         orderService = new OrderService(orderRepository, itemRepository, orderItemRepository, reviewRepository);
         itemService = new ItemService(itemRepository, orderItemRepository, categoryRepository, categoryItemRepository, reviewRepository, memberRepository);
     }
@@ -38,15 +38,15 @@ public class AppConfig {
         return instance;
     }
 
-    public MemberService getMemberService() {
+    public MemberService memberService() {
         return memberService;
     }
 
-    public OrderService getOrderService() {
+    public OrderService orderService() {
         return orderService;
     }
 
-    public ItemService getItemService() {
+    public ItemService itemService() {
         return itemService;
     }
 }
